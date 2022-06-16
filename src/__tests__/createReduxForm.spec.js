@@ -1,9 +1,10 @@
 /* eslint react/no-multi-comp:0 */
 import expect, {createSpy} from 'expect';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import ReactDOM from 'react-dom';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import {combineReducers, createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducer from '../reducer';
@@ -16,7 +17,7 @@ const createRestorableSpy = (fn) => {
 };
 
 describe('createReduxForm', () => {
-  const reduxForm = createReduxForm(false, React, connect);
+  const reduxForm = createReduxForm(false, React, PropTypes, connect);
   const makeStore = () => createStore(combineReducers({
     form: reducer
   }));
@@ -69,6 +70,9 @@ describe('createReduxForm', () => {
         form: 'testForm',
         fields: ['foo', 'bar']
       })(Form);
+
+
+
       TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Decorated/>
@@ -83,12 +87,12 @@ describe('createReduxForm', () => {
       form: 'testForm',
       fields: ['foo', 'bar']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
     expect(stub.props.fields).toBeA('object');
     expectField({
       field: stub.props.fields.foo,
@@ -122,12 +126,12 @@ describe('createReduxForm', () => {
       form: 'testForm',
       fields: ['foo', 'bar']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{foo: 'fooValue', bar: 'barValue'}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
     expect(stub.props.fields).toBeA('object');
     expectField({
       field: stub.props.fields.foo,
@@ -162,12 +166,12 @@ describe('createReduxForm', () => {
       form,
       fields: ['foo', 'bar']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onBlur('fooValue');
 
@@ -206,12 +210,13 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       touchOnBlur: false
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onBlur('fooValue');
 
@@ -249,12 +254,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['foo', 'bar']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onChange('fooValue');
 
@@ -293,12 +299,13 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       touchOnChange: true
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onChange('fooValue');
 
@@ -336,12 +343,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['foo', 'bar']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expect(stub.props.active).toBe(undefined);
 
@@ -383,12 +391,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['foo', 'bar']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{foo: 'fooValue', bar: 'barValue'}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.foo,
@@ -426,12 +435,14 @@ describe('createReduxForm', () => {
       form,
       fields: ['children[].name']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{children: [{name: 'Tom'}, {name: 'Jerry'}]}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
+
     expect(stub.props.fields.children).toBeA('array');
     expect(stub.props.fields.children.length).toBe(2);
 
@@ -505,12 +516,13 @@ describe('createReduxForm', () => {
         return errors;
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{foo: 'fooValue', bar: 'barValue'}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.foo,
@@ -593,12 +605,13 @@ describe('createReduxForm', () => {
         return errors;
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{foo: {bar: 'fooBar'}}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.foo.bar,
@@ -657,12 +670,13 @@ describe('createReduxForm', () => {
         return errors;
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{foo: ['fooBar'], bar: [{name: ''}]}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.foo[0],
@@ -816,12 +830,13 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       readonly: true
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.foo,
@@ -860,12 +875,13 @@ describe('createReduxForm', () => {
         children: [{ name: 'Tom' }, { name: 'Jerry' }]
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.children[0].name,
@@ -919,12 +935,12 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       readonly: true
     })(FormComponent);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated onSubmit={submit}/>
       </Provider>
     );
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(dom, 'form');
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(doc, 'form');
 
     TestUtils.Simulate.submit(formElement);
   });
@@ -960,12 +976,12 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       readonly: true
     })(FormComponent);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated onSubmit={submit}/>
       </Provider>
     );
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(dom, 'form');
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(doc, 'form');
 
     TestUtils.Simulate.submit(formElement);
   });
@@ -985,12 +1001,13 @@ describe('createReduxForm', () => {
         bar: 'cat'
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onBlur('dog');
     expect(asyncValidate).toNotHaveBeenCalled();
@@ -1011,12 +1028,13 @@ describe('createReduxForm', () => {
         bar: 'cat'
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onBlur('bear');
     expect(asyncValidate).toHaveBeenCalled();
@@ -1033,12 +1051,13 @@ describe('createReduxForm', () => {
       asyncValidate,
       asyncBlurFields: ['foo']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     stub.props.fields.foo.onBlur();
     expect(asyncValidate).toHaveBeenCalled();
@@ -1071,12 +1090,12 @@ describe('createReduxForm', () => {
         bar: 'cat'
       }
     })(FormComponent);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(dom, 'form');
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(doc, 'form');
 
     TestUtils.Simulate.submit(formElement);
 
@@ -1112,12 +1131,12 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       readonly: true
     })(FormComponent);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated />
       </Provider>
     );
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(dom, 'form');
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(doc, 'form');
 
     TestUtils.Simulate.submit(formElement);
   });
@@ -1154,12 +1173,12 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar'],
       readonly: true
     })(FormComponent);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated />
       </Provider>
     );
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(dom, 'form');
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(doc, 'form');
 
     TestUtils.Simulate.submit(formElement);
   });
@@ -1174,12 +1193,13 @@ describe('createReduxForm', () => {
         children: [1, 2]
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.children,
@@ -1204,12 +1224,13 @@ describe('createReduxForm', () => {
         colors: ['red', 'blue']
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expect(stub.props.fields.colors).toBeA('array');
     expect(stub.props.fields.colors.length).toBe(2);
@@ -1252,12 +1273,13 @@ describe('createReduxForm', () => {
         ]
       }
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expect(stub.props.fields.users).toBeA('array');
     expect(stub.props.fields.users.length).toBe(1);
@@ -1293,12 +1315,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['users[].name', 'users[].age']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expect(stub.props.fields.users).toBeA('array');
     expect(stub.props.fields.users.length).toBe(0);
@@ -1364,12 +1387,13 @@ describe('createReduxForm', () => {
         'acknowledgements.show'
       ]
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expect(stub.props.fields.acknowledgements).toBeA('object');
     expect(stub.props.fields.acknowledgements.items).toBeA('array');
@@ -1424,12 +1448,13 @@ describe('createReduxForm', () => {
         'proposals[].rooms[].children'
       ]
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expect(stub.props.fields.proposals).toBeA('array');
     expect(stub.props.fields.proposals.length).toBe(0);
@@ -1566,12 +1591,12 @@ describe('createReduxForm', () => {
   //    form,
   //    fields: ['tags[]']
   //  })(Form);
-  //  const dom = TestUtils.renderIntoDocument(
+  //  const doc = TestUtils.renderIntoDocument(
   //    <Provider store={store}>
   //      <Decorated/>
   //    </Provider>
   //  );
-  //  const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+  //  const stub = TestUtils.renderIntoDocument(Form);
   //
   //  expect(stub.props.fields.tags).toBeA('array');
   //  expect(stub.props.fields.tags.length).toBe(0);
@@ -1603,12 +1628,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['children']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     // set value
     stub.props.fields.children.onChange([1, 2]);
@@ -1667,12 +1693,12 @@ describe('createReduxForm', () => {
       form,
       fields: ['name']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc1 = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{name: 'Bob'}}/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc1, Form);
 
     // check value
     expectField({
@@ -1714,12 +1740,12 @@ describe('createReduxForm', () => {
       });
 
     // should NOT dispatch INITIALIZE this time
-    const dom2 = TestUtils.renderIntoDocument(
+    const doc2 = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated initialValues={{name: 'Bob'}}/>
       </Provider>
     );
-    const stub2 = TestUtils.findRenderedComponentWithType(dom2, Form);
+    const stub2 = TestUtils.findRenderedComponentWithType(doc2, Form);
     // check that value is unchanged
     expectField({
       field: stub2.props.fields.name,
@@ -1768,12 +1794,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['name']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     // check value
     expectField({
@@ -1821,12 +1848,13 @@ describe('createReduxForm', () => {
       fields: ['name'],
       validate: () => ({ name: deepError })
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     expectField({
       field: stub.props.fields.name,
@@ -1854,12 +1882,13 @@ describe('createReduxForm', () => {
       initialValues: { name: 'Tom' },
       asyncValidate: () => Promise.reject({ name: deepError })
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     // check field before validation
     expectField({
@@ -1916,12 +1945,13 @@ describe('createReduxForm', () => {
       initialValues: { name: 'Tom' },
       onSubmit: () => Promise.reject({ name: deepError })
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     // check before validation
     expectField({
@@ -1967,12 +1997,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['larry', 'moe', 'curly']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     const larry = stub.props.fields.larry;
     const moe = stub.props.fields.moe;
@@ -1992,12 +2023,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['address.street', 'address.postalCode']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     const address = stub.props.fields.address;
     const street = stub.props.fields.address.street;
@@ -2017,12 +2049,13 @@ describe('createReduxForm', () => {
       form,
       fields: ['contact.shipping.phones[]', 'contact.billing.phones[]']
     })(Form);
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Decorated/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+    TestUtils.renderIntoDocument(Form);
+    const stub = TestUtils.findRenderedComponentWithType(doc, Form);
 
     let contact = stub.props.fields.contact;
     let shipping = stub.props.fields.contact.shipping;
@@ -2085,13 +2118,13 @@ describe('createReduxForm', () => {
       }
     }
 
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Container/>
       </Provider>
     );
 
-    const button = TestUtils.findRenderedDOMComponentWithTag(dom, 'button');
+    const button = TestUtils.findRenderedDOMComponentWithTag(doc, 'button');
 
     expect(onSubmit).toNotHaveBeenCalled();
 
@@ -2136,13 +2169,13 @@ describe('createReduxForm', () => {
       }
     }
 
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Container/>
       </Provider>
     );
 
-    const button = TestUtils.findRenderedDOMComponentWithTag(dom, 'button');
+    const button = TestUtils.findRenderedDOMComponentWithTag(doc, 'button');
 
     expect(onSubmit).toNotHaveBeenCalled();
 
@@ -2178,7 +2211,7 @@ describe('createReduxForm', () => {
       fields: ['name']
     })(BarForm);
 
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <div>
           <DecoratedFooForm/>
@@ -2186,7 +2219,8 @@ describe('createReduxForm', () => {
         </div>
       </Provider>
     );
-    const fooStub = TestUtils.findRenderedComponentWithType(dom, FooForm);
+    TestUtils.renderIntoDocument(FooForm);
+    const fooStub = TestUtils.findRenderedComponentWithType(doc, FooForm);
 
     // first render
     expect(fooRender).toHaveBeenCalled();
@@ -2257,12 +2291,14 @@ describe('createReduxForm', () => {
       fields: ['foo', 'bar']
     })(FieldTestForm);
 
-    const dom = TestUtils.renderIntoDocument(
+    const doc = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <DecoratedForm/>
       </Provider>
     );
-    const stub = TestUtils.findRenderedComponentWithType(dom, FieldTestForm);
+
+    TestUtils.renderIntoDocument(FieldTestForm);
+    const stub = TestUtils.findRenderedComponentWithType(doc, FieldTestForm);
 
     // first render
     expect(fooRenders).toBe(1);
@@ -2297,12 +2333,12 @@ describe('createReduxForm', () => {
   //    form,
   //    fields: ['name']
   //  })(Form);
-  //  const dom = TestUtils.renderIntoDocument(
+  //  const doc = TestUtils.renderIntoDocument(
   //    <Provider store={store}>
   //      <Decorated/>
   //    </Provider>
   //  );
-  //  const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+  //  const stub = TestUtils.renderIntoDocument(Form);
   //
   //  stub.props.fields.name.onChange('FOO');
   //  const setData = createSpy();
@@ -2326,7 +2362,7 @@ describe('createReduxForm', () => {
   //    form,
   //    fields: ['kennel', 'dogs[].name', 'dogs[].breed']
   //  })(Form);
-  //  const dom = TestUtils.renderIntoDocument(
+  //  const doc = TestUtils.renderIntoDocument(
   //    <Provider store={store}>
   //      <Decorated initialValues={{
   //        kennel: 'Bob\'s Dog House',
@@ -2338,7 +2374,7 @@ describe('createReduxForm', () => {
   //      }}/>
   //    </Provider>
   //  );
-  //  const stub = TestUtils.findRenderedComponentWithType(dom, Form);
+  //  const stub = TestUtils.renderIntoDocument(Form);
   //
   //  expect(stub.props.fields.dogs.length).toBe(3);
   //
@@ -2375,7 +2411,7 @@ describe('createReduxForm', () => {
   //    form,
   //    fields: ['name']
   //  })(InitialValuesTestForm);
-  //  TestUtils.renderIntoDocument(
+  //  const doc = TestUtils.renderIntoDocument(
   //    <Provider store={store}>
   //      <Decorated initialValues={{name: 'Bob'}}/>
   //    </Provider>

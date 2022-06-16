@@ -45,6 +45,8 @@
     "react-lazy-cache": "^3.0.1"
   },
   "devDependencies": {
+    "@types/react": "^16.14.26",
+    "@types/react-dom": "^16.9.16",
     "babel-cli": "^6.3.17",
     "babel-core": "^6.3.26",
     "babel-eslint": "^5.0.0-beta9",
@@ -84,18 +86,18 @@
     "jsdom": "~5.4.3",
     "mocha": "^2.4.5",
     "mocha-lcov-reporter": "^1.1.0",
-    "react": "^0.14.7",
-    "react-addons-test-utils": "^0.14.7",
-    "react-dom": "^0.14.7",
-    "react-redux": "^4.4.0",
-    "redux": "^3.3.1",
+    "prop-types": "^15.8.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-redux": "^6.0.1",
+    "redux": "^4.2.0",
     "rifraf": "^2.0.2",
     "rimraf": "^2.5.2",
     "webpack": "^1.12.13"
   },
   "peerDependencies": {
-    "react-redux": "^3.0.0 || ^4.0.0",
-    "redux": "^3.0.0"
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.0"
   },
   "npmName": "redux-form",
   "npmFileMap": [

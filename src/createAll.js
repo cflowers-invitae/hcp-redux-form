@@ -41,7 +41,7 @@ const touchWithKey = boundActions.touchWithKey;
 const untouch = boundActions.untouch;
 const untouchWithKey = boundActions.untouchWithKey;
 
-export default function createAll(isReactNative, React, connect) {
+export default function createAll(isReactNative, React, PropTypes, connect) {
   return {
     actionTypes,
     addArrayValue,
@@ -53,7 +53,7 @@ export default function createAll(isReactNative, React, connect) {
     getValues,
     initialize,
     initializeWithKey,
-    propTypes: createPropTypes(React),
+    propTypes: createPropTypes(PropTypes),
     reduxForm: createReduxForm(isReactNative, React, connect),
     reducer,
     removeArrayValue,

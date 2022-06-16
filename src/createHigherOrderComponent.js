@@ -19,13 +19,14 @@ import wrapMapStateToProps from './wrapMapStateToProps';
 const createHigherOrderComponent = (config,
                                     isReactNative,
                                     React,
+                                    PropTypes,
                                     connect,
                                     WrappedComponent,
                                     mapStateToProps,
                                     mapDispatchToProps,
                                     mergeProps,
                                     options) => {
-  const {Component, PropTypes} = React;
+  const {Component} = React;
   return (reduxMountPoint, formName, formKey, getFormState) => {
     class ReduxForm extends Component {
       constructor(props) {
@@ -38,14 +39,14 @@ const createHigherOrderComponent = (config,
         submitPassback(() => this.handleSubmit());  // wrapped in function to disallow params
       }
 
-      componentWillMount() {
+      UNSAFE_componentWillMount() {
         const {fields, form, initialize, initialValues} = this.props;
         if (initialValues && !form._initialized) {
           initialize(initialValues, fields);
         }
       }
 
-      componentWillReceiveProps(nextProps) {
+      UNSAFE_componentWillReceiveProps(nextProps) {
         if (!deepEqual(this.props.fields, nextProps.fields) || !deepEqual(this.props.form, nextProps.form, {strict: true})) {
           this.fields = readFields(nextProps, this.props, this.fields, this.asyncValidate, isReactNative);
         }

@@ -29,7 +29,7 @@ const createReduxFormConnector =
         }
 
         UNSAFE_componentWillReceiveProps(nextProps) {
-          this.cache.UNSAFE_componentWillReceiveProps(nextProps);
+          this.cache.componentWillReceiveProps(nextProps);
         }
 
         render() {
@@ -37,7 +37,6 @@ const createReduxFormConnector =
           // remove some redux-form config-only props
           const {reduxMountPoint, destroyOnUnmount, form, getFormState, touchOnBlur, touchOnChange,
             ...passableProps } = this.props; // eslint-disable-line no-redeclare
-            // todo: cf
           return <ReduxForm {...passableProps}/>;
         }
       }

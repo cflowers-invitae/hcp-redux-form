@@ -1,5 +1,13 @@
 # redux-form
 ---
+## Invitae Notes
+This is a fork of the official `redux-form` package at version `4.2.2`. The package has been modified to support React 16.
+
+This fork was made specifically for [HCP](https://github.com/invitae-internal/health-care-provider) and should not be used
+in any other application. This fork allows HCP to begin using other [Fresco](https://github.com/invitae-internal/fresco) 
+packages that are dependent on React 16 features (hooks, context, etc), while ultimately working to remove all usages of `redux-form`.
+
+## Original Documentation
 [<img src="http://npm.packagequality.com/badge/redux-form.png" align="right"/>](http://packagequality.com/#?package=redux-form)
 
 [![NPM Version](https://img.shields.io/npm/v/redux-form.svg?style=flat)](https://www.npmjs.com/package/redux-form) 

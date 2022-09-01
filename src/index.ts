@@ -1,7 +1,16 @@
-import * as React from 'react-native'
-import {connect} from 'react-redux/native'
+import * as React from 'react'
+import * as PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 
 import createAll from './createAll'
+
+export * from './types'
+
+const isNative =
+  typeof window !== 'undefined' &&
+  window.navigator &&
+  window.navigator.product &&
+  window.navigator.product === 'ReactNative'
 
 export const {
   actionTypes,
@@ -13,11 +22,11 @@ export const {
   focus,
   reducer,
   reduxForm,
+  removeArrayValue,
   getValues,
   initialize,
   initializeWithKey,
   propTypes,
-  removeArrayValue,
   reset,
   startAsyncValidation,
   startSubmit,
@@ -28,4 +37,4 @@ export const {
   touchWithKey,
   untouch,
   untouchWithKey,
-} = createAll(true, React, connect)
+} = createAll(isNative, React, PropTypes, connect)

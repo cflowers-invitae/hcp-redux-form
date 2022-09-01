@@ -1,13 +1,13 @@
-const flag = '_isFieldValue';
-const isObject = object => typeof object === 'object';
+const flag = '_isFieldValue'
+const isObject = object => typeof object === 'object'
 
 export function makeFieldValue(object) {
   if (object && isObject(object)) {
-    Object.defineProperty(object, flag, {value: true});
+    Object.defineProperty(object, flag, {value: true})
   }
-  return object;
+  return object
 }
 
 export function isFieldValue(object) {
-  return !!(object && isObject(object) && object[flag]);
+  return !!(object && isObject(object) && object[flag])
 }

@@ -1,4 +1,4 @@
-import {bindActionCreators} from 'redux';
+import {bindActionCreators} from 'redux'
 
 const wrapMapDispatchToProps = (mapDispatchToProps, actionCreators) => {
   if (mapDispatchToProps) {
@@ -7,25 +7,25 @@ const wrapMapDispatchToProps = (mapDispatchToProps, actionCreators) => {
         return (dispatch, ownProps) => ({
           dispatch,
           ...mapDispatchToProps(dispatch, ownProps),
-          ...bindActionCreators(actionCreators, dispatch)
-        });
+          ...bindActionCreators(actionCreators, dispatch),
+        })
       }
       return dispatch => ({
         dispatch,
         ...mapDispatchToProps(dispatch),
-        ...bindActionCreators(actionCreators, dispatch)
-      });
+        ...bindActionCreators(actionCreators, dispatch),
+      })
     }
     return dispatch => ({
       dispatch,
       ...bindActionCreators(mapDispatchToProps, dispatch),
-      ...bindActionCreators(actionCreators, dispatch)
-    });
+      ...bindActionCreators(actionCreators, dispatch),
+    })
   }
   return dispatch => ({
     dispatch,
-    ...bindActionCreators(actionCreators, dispatch)
-  });
-};
+    ...bindActionCreators(actionCreators, dispatch),
+  })
+}
 
-export default wrapMapDispatchToProps;
+export default wrapMapDispatchToProps

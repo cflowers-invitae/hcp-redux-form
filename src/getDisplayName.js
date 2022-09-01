@@ -1,4 +1,3 @@
 export default function getDisplayName(Comp) {
-  return Comp.displayName || Comp.name || 'Component';
+  return Comp.displayName || Comp.name || 'Component'
 }
-

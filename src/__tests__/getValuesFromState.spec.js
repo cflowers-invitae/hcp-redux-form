@@ -1,214 +1,189 @@
-import expect from 'expect';
-import {makeFieldValue} from '../fieldValue';
-import getValuesFromState from '../getValuesFromState';
+import expect from 'expect'
+
+import {makeFieldValue} from '../fieldValue'
+import getValuesFromState from '../getValuesFromState'
 
 describe('getValuesFromState', () => {
   it('should get simple values from state', () => {
     const state = {
-      foo: makeFieldValue({value: 'bar'}),
-      catLives: makeFieldValue({value: 9}),
       alive: makeFieldValue({value: true}),
-      value: makeFieldValue({value: 'value'})
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        foo: 'bar',
-        catLives: 9,
-        alive: true,
-        value: 'value'
-      });
-  });
+      catLives: makeFieldValue({value: 9}),
+      foo: makeFieldValue({value: 'bar'}),
+      value: makeFieldValue({value: 'value'}),
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      alive: true,
+      catLives: 9,
+      foo: 'bar',
+      value: 'value',
+    })
+  })
 
   it('should understand undefined values that have only been touched', () => {
     const state = {
-      foo: makeFieldValue({value: 'dog', touched: true}),
       bar: makeFieldValue({touched: true}),
-      baz: makeFieldValue({touched: true})
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        foo: 'dog'
-      });
-  });
+      baz: makeFieldValue({touched: true}),
+      foo: makeFieldValue({touched: true, value: 'dog'}),
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      foo: 'dog',
+    })
+  })
 
   it('should get deep values from state', () => {
     const state = {
+      alive: makeFieldValue({value: true}),
       foo: {
-        bar: makeFieldValue({value: 'baz'})
+        bar: makeFieldValue({value: 'baz'}),
       },
       lives: {
-        cat: makeFieldValue({value: 9})
+        cat: makeFieldValue({value: 9}),
       },
-      alive: makeFieldValue({value: true})
-    };
+    }
     expect(getValuesFromState(state))
       .toBeA('object')
       .toEqual({
+        alive: true,
         foo: {
-          bar: 'baz'
+          bar: 'baz',
         },
         lives: {
-          cat: 9
+          cat: 9,
         },
-        alive: true
-      });
-  });
+      })
+  })
 
   it('should get date values from state', () => {
-    const date1 = new Date();
-    const date2 = new Date(date1.getTime() + 1);
+    const date1 = new Date()
+    const date2 = new Date(date1.getTime() + 1)
     const state = {
       time1: {
-        value: date1
+        value: date1,
       },
       time2: {
-        value: date2
-      }
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        time1: date1,
-        time2: date2
-      });
-  });
+        value: date2,
+      },
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      time1: date1,
+      time2: date2,
+    })
+  })
 
   it('should get undefined values from state', () => {
     const state = {
-      foo: {
-        value: undefined
-      },
       bar: {
-        value: undefined
-      }
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({});
-  });
+        value: undefined,
+      },
+      foo: {
+        value: undefined,
+      },
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({})
+  })
 
   it('should get null values from state', () => {
     const state = {
-      foo: {
-        value: null
-      },
       bar: {
-        value: null
-      }
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        foo: null,
-        bar: null
-      });
-  });
+        value: null,
+      },
+      foo: {
+        value: null,
+      },
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      bar: null,
+      foo: null,
+    })
+  })
 
   it('should get empty string values from state', () => {
     const state = {
-      foo: {
-        value: ''
-      },
       bar: {
-        value: ''
-      }
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        foo: '',
-        bar: ''
-      });
-  });
+        value: '',
+      },
+      foo: {
+        value: '',
+      },
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      bar: '',
+      foo: '',
+    })
+  })
 
   it('should get array values from state', () => {
     const state = {
-      foo: [
-        makeFieldValue({value: 'bar'}),
-        makeFieldValue({value: 'baz'}),
-        {}
-      ],
-      alive: makeFieldValue({value: true})
-    };
+      alive: makeFieldValue({value: true}),
+      foo: [makeFieldValue({value: 'bar'}), makeFieldValue({value: 'baz'}), {}],
+    }
     expect(getValuesFromState(state))
       .toBeA('object')
       .toEqual({
+        alive: true,
         foo: ['bar', 'baz', undefined],
-        alive: true
-      });
-  });
+      })
+  })
 
   it('should allow an array to be empty', () => {
     const state = {
-      foo: []
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({foo: []});
-  });
+      foo: [],
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({foo: []})
+  })
 
   it('should get deep array values from state', () => {
     const state = {
-      foo: {
-        animals: [
-          makeFieldValue({value: 'cat'}),
-          makeFieldValue({value: 'dog'}),
-          makeFieldValue({value: 'rat'})
-        ]
-      },
       bar: [
         {
           deeper: {
-            value: 42
-          }
-        }
-      ]
-    };
+            value: 42,
+          },
+        },
+      ],
+      foo: {
+        animals: [makeFieldValue({value: 'cat'}), makeFieldValue({value: 'dog'}), makeFieldValue({value: 'rat'})],
+      },
+    }
     expect(getValuesFromState(state))
       .toBeA('object')
       .toEqual({
+        bar: [{deeper: 42}],
         foo: {
-          animals: ['cat', 'dog', 'rat']
+          animals: ['cat', 'dog', 'rat'],
         },
-        bar: [{deeper: 42}]
-      });
-  });
+      })
+  })
 
   it('should ignore values starting with _', () => {
     const state = {
-      foo: {
-        value: 'dog'
-      },
+      _someMetaValue: 'rat',
       bar: {
-        value: 'cat'
+        value: 'cat',
       },
-      _someMetaValue: 'rat'
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        foo: 'dog',
-        bar: 'cat'
-      });
-  });
+      foo: {
+        value: 'dog',
+      },
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      bar: 'cat',
+      foo: 'dog',
+    })
+  })
 
   it('should ignore visited fields without values', () => {
     const state = {
-      foo: {
-        value: 'dog'
-      },
       bar: {
-        visited: true
-      }
-    };
-    expect(getValuesFromState(state))
-      .toBeA('object')
-      .toEqual({
-        foo: 'dog'
-      });
-  });
+        visited: true,
+      },
+      foo: {
+        value: 'dog',
+      },
+    }
+    expect(getValuesFromState(state)).toBeA('object').toEqual({
+      foo: 'dog',
+    })
+  })
 
   it('should get deep array of objects from state', () => {
     const state = {
@@ -216,15 +191,18 @@ describe('getValuesFromState', () => {
         animals: [
           {key: makeFieldValue({value: 'k1'}), value: makeFieldValue({value: 'v1'})},
           {key: makeFieldValue({value: 'k2'}), value: makeFieldValue({value: 'v2'})},
-        ]
-      }
-    };
+        ],
+      },
+    }
     expect(getValuesFromState(state))
       .toBeA('object')
       .toEqual({
         foo: {
-          animals: [{key: 'k1', value: 'v1'}, {key: 'k2', value: 'v2'}]
-        }
-      });
-  });
-});
+          animals: [
+            {key: 'k1', value: 'v1'},
+            {key: 'k2', value: 'v2'},
+          ],
+        },
+      })
+  })
+})

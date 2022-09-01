@@ -1,223 +1,245 @@
-import expect from 'expect';
-import reducer, {globalErrorKey} from '../reducer';
-import bindActionData from '../bindActionData';
-import {addArrayValue, blur, change, focus, initialize, removeArrayValue, reset, startAsyncValidation, startSubmit,
-  stopAsyncValidation, stopSubmit, swapArrayValues, touch, untouch, destroy} from '../actions';
-import {isFieldValue, makeFieldValue} from '../fieldValue';
+import expect from 'expect'
+
+import {
+  addArrayValue,
+  blur,
+  change,
+  destroy,
+  focus,
+  initialize,
+  removeArrayValue,
+  reset,
+  startAsyncValidation,
+  startSubmit,
+  stopAsyncValidation,
+  stopSubmit,
+  swapArrayValues,
+  touch,
+  untouch,
+} from '../actions'
+import bindActionData from '../bindActionData'
+import {isFieldValue, makeFieldValue} from '../fieldValue'
+import reducer, {globalErrorKey} from '../reducer'
 
 const compare = (a, b) => {
   if (a.value > b.value) {
-    return 1;
+    return 1
   }
   if (a.value < b.value) {
-    return -1;
+    return -1
   }
-  return 0;
-};
+  return 0
+}
 
 describe('reducer', () => {
   it('should initialize state to {}', () => {
-    const state = reducer();
-    expect(state)
-      .toExist()
-      .toBeA('object');
-    expect(Object.keys(state).length).toBe(0);
-  });
+    const state = reducer()
+    expect(state).toExist().toBeA('object')
+    expect(Object.keys(state).length).toBe(0)
+  })
 
   it('should not modify state when action has no form', () => {
-    const state = {foo: 'bar'};
-    expect(reducer(state, {type: 'SOMETHING_ELSE'})).toBe(state);
-  });
+    const state = {foo: 'bar'}
+    expect(reducer(state, {type: 'SOMETHING_ELSE'})).toBe(state)
+  })
 
   it('should initialize form state when action has form', () => {
-    const state = reducer(undefined, {form: 'foo'});
-    expect(state)
-      .toExist()
-      .toBeA('object');
-    expect(Object.keys(state).length).toBe(1);
+    const state = reducer(undefined, {form: 'foo'})
+    expect(state).toExist().toBeA('object')
+    expect(Object.keys(state).length).toBe(1)
     expect(state.foo)
       .toExist()
       .toBeA('object')
       .toEqual({
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      });
-  });
+        [globalErrorKey]: undefined,
+      })
+  })
 
   it('should add an empty array value with empty state', () => {
-    const state = reducer({}, {
-      ...addArrayValue('myField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: [
-          {
-            value: undefined
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField[0])).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...addArrayValue('myField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: undefined,
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField[0])).toBe(true)
+  })
 
   it('should add an empty deep array value with empty state', () => {
-    const state = reducer({}, {
-      ...addArrayValue('myField.myArray'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          myArray: [
-            {
-              value: undefined
-            }
-          ]
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField.myArray)).toBe(false);
-    expect(isFieldValue(state.foo.myField.myArray[0])).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...addArrayValue('myField.myArray'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        myArray: [
+          {
+            value: undefined,
+          },
+        ],
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField.myArray)).toBe(false)
+    expect(isFieldValue(state.foo.myField.myArray[0])).toBe(true)
+  })
 
   it('should add a deep array value with initial value', () => {
-    const state = reducer({}, {
-      ...addArrayValue('myField.myArray', 20, undefined),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          myArray: [
-            {
-              value: 20
-            }
-          ]
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField.myArray)).toBe(false);
-    expect(isFieldValue(state.foo.myField.myArray[0])).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...addArrayValue('myField.myArray', 20, undefined),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        myArray: [
+          {
+            value: 20,
+          },
+        ],
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField.myArray)).toBe(false)
+    expect(isFieldValue(state.foo.myField.myArray[0])).toBe(true)
+  })
 
   it('should push an array value', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...addArrayValue('myField', 'baz'),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'foo'
-          },
-          {
-            value: 'bar'
-          },
-          {
-            value: 'baz'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2])).toBe(true);
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+          ],
+        },
+      },
+      {
+        ...addArrayValue('myField', 'baz'),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'foo',
+        },
+        {
+          value: 'bar',
+        },
+        {
+          value: 'baz',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2])).toBe(true)
+  })
 
   it('should insert an array value', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...addArrayValue('myField', 'baz', 1),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'foo'
-          },
-          {
-            value: 'baz'
-          },
-          {
-            value: 'bar'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2])).toBe(true);
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+          ],
+        },
+      },
+      {
+        ...addArrayValue('myField', 'baz', 1),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'foo',
+        },
+        {
+          value: 'baz',
+        },
+        {
+          value: 'bar',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2])).toBe(true)
+  })
 
   // TODO: Find a way to make this pass:
   /*
@@ -338,2689 +360,2813 @@ describe('reducer', () => {
    */
 
   it('should push a deep array value which is a nested object', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          {
-            foo: makeFieldValue({
-              initial: {a: 'foo-a1', b: 'foo-b1'},
-              value: {a: 'foo-a1', b: 'foo-b1'},
-            }),
-            bar: makeFieldValue({
-              initial: {a: 'bar-a1', b: 'bar-b1'},
-              value: {a: 'bar-a1', b: 'bar-b1'},
-            })
-          },
-          {
-            foo: makeFieldValue({
-              initial: {a: 'foo-a2', b: 'foo-b2'},
-              value: {a: 'foo-a2', b: 'foo-b2'},
-            }),
-            bar: makeFieldValue({
-              initial: {a: 'bar-a2', b: 'bar-b2'},
-              value: {a: 'bar-a2', b: 'bar-b2'},
-            })
-          },
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        _error: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...addArrayValue('myField', {
-        foo: {a: 'foo-a3', b: 'foo-b3'},
-        bar: {a: 'bar-a3', b: 'bar-b3'}
-      }, undefined),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            foo: {
-              initial: {a: 'foo-a1', b: 'foo-b1'},
-              value: {a: 'foo-a1', b: 'foo-b1'},
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _error: undefined,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          myField: [
+            {
+              bar: makeFieldValue({
+                initial: {a: 'bar-a1', b: 'bar-b1'},
+                value: {a: 'bar-a1', b: 'bar-b1'},
+              }),
+              foo: makeFieldValue({
+                initial: {a: 'foo-a1', b: 'foo-b1'},
+                value: {a: 'foo-a1', b: 'foo-b1'},
+              }),
             },
-            bar: {
-              initial: {a: 'bar-a1', b: 'bar-b1'},
-              value: {a: 'bar-a1', b: 'bar-b1'},
-            }
-          },
-          {
-            foo: {
-              initial: {a: 'foo-a2', b: 'foo-b2'},
-              value: {a: 'foo-a2', b: 'foo-b2'},
+            {
+              bar: makeFieldValue({
+                initial: {a: 'bar-a2', b: 'bar-b2'},
+                value: {a: 'bar-a2', b: 'bar-b2'},
+              }),
+              foo: makeFieldValue({
+                initial: {a: 'foo-a2', b: 'foo-b2'},
+                value: {a: 'foo-a2', b: 'foo-b2'},
+              }),
             },
-            bar: {
-              initial: {a: 'bar-a2', b: 'bar-b2'},
-              value: {a: 'bar-a2', b: 'bar-b2'},
-            }
-          },
+          ],
+        },
+      },
+      {
+        ...addArrayValue(
+          'myField',
           {
-            foo: {
-              initial: {a: 'foo-a3', b: 'foo-b3'},
-              value: {a: 'foo-a3', b: 'foo-b3'},
-            },
-            bar: {
-              initial: {a: 'bar-a3', b: 'bar-b3'},
-              value: {a: 'bar-a3', b: 'bar-b3'},
-            }
+            bar: {a: 'bar-a3', b: 'bar-b3'},
+            foo: {a: 'foo-a3', b: 'foo-b3'},
           },
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        _error: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[0].bar)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[1].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1].bar)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[2].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2].bar)).toBe(true);
-  });
+          undefined,
+        ),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _error: undefined,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      myField: [
+        {
+          bar: {
+            initial: {a: 'bar-a1', b: 'bar-b1'},
+            value: {a: 'bar-a1', b: 'bar-b1'},
+          },
+          foo: {
+            initial: {a: 'foo-a1', b: 'foo-b1'},
+            value: {a: 'foo-a1', b: 'foo-b1'},
+          },
+        },
+        {
+          bar: {
+            initial: {a: 'bar-a2', b: 'bar-b2'},
+            value: {a: 'bar-a2', b: 'bar-b2'},
+          },
+          foo: {
+            initial: {a: 'foo-a2', b: 'foo-b2'},
+            value: {a: 'foo-a2', b: 'foo-b2'},
+          },
+        },
+        {
+          bar: {
+            initial: {a: 'bar-a3', b: 'bar-b3'},
+            value: {a: 'bar-a3', b: 'bar-b3'},
+          },
+          foo: {
+            initial: {a: 'foo-a3', b: 'foo-b3'},
+            value: {a: 'foo-a3', b: 'foo-b3'},
+          },
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[0].bar)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[1].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1].bar)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[2].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2].bar)).toBe(true)
+  })
 
   it('should push a subarray value which is an object', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          {
-            myField2: [
-              {
-                foo: makeFieldValue({
-                  initial: 'foo-1-1',
-                  value: 'foo-1-1'
-                }),
-                bar: makeFieldValue({
-                  initial: 'bar-1-1',
-                  value: 'bar-1-1'
-                })
-              },
-              {
-                foo: makeFieldValue({
-                  initial: 'foo-1-2',
-                  value: 'foo-1-2'
-                }),
-                bar: makeFieldValue({
-                  initial: 'bar-1-2',
-                  value: 'bar-1-2'
-                })
-              }
-            ]
-          },
-          {
-            myField2: [
-              {
-                foo: makeFieldValue({
-                  initial: 'foo-2-1',
-                  value: 'foo-2-1'
-                }),
-                bar: makeFieldValue({
-                  initial: 'bar-2-1',
-                  value: 'bar-2-1'
-                })
-              },
-              {
-                foo: makeFieldValue({
-                  initial: 'foo-2-2',
-                  value: 'foo-2-2'
-                }),
-                bar: makeFieldValue({
-                  initial: 'bar-2-2',
-                  value: 'bar-2-2'
-                })
-              }
-            ]
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        _error: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...addArrayValue('myField[1].myField2', {foo: 'foo-2-3', bar: 'bar-2-3'}, undefined),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            myField2: [
-              {
-                foo: {
-                  initial: 'foo-1-1',
-                  value: 'foo-1-1'
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _error: undefined,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          myField: [
+            {
+              myField2: [
+                {
+                  bar: makeFieldValue({
+                    initial: 'bar-1-1',
+                    value: 'bar-1-1',
+                  }),
+                  foo: makeFieldValue({
+                    initial: 'foo-1-1',
+                    value: 'foo-1-1',
+                  }),
                 },
-                bar: {
-                  initial: 'bar-1-1',
-                  value: 'bar-1-1'
-                }
-              },
-              {
-                foo: {
-                  initial: 'foo-1-2',
-                  value: 'foo-1-2'
+                {
+                  bar: makeFieldValue({
+                    initial: 'bar-1-2',
+                    value: 'bar-1-2',
+                  }),
+                  foo: makeFieldValue({
+                    initial: 'foo-1-2',
+                    value: 'foo-1-2',
+                  }),
                 },
-                bar: {
-                  initial: 'bar-1-2',
-                  value: 'bar-1-2'
-                }
-              },
-            ],
-          },
-          {
-            myField2: [
-              {
-                foo: {
-                  initial: 'foo-2-1',
-                  value: 'foo-2-1'
+              ],
+            },
+            {
+              myField2: [
+                {
+                  bar: makeFieldValue({
+                    initial: 'bar-2-1',
+                    value: 'bar-2-1',
+                  }),
+                  foo: makeFieldValue({
+                    initial: 'foo-2-1',
+                    value: 'foo-2-1',
+                  }),
                 },
-                bar: {
-                  initial: 'bar-2-1',
-                  value: 'bar-2-1'
-                }
-              },
-              {
-                foo: {
-                  initial: 'foo-2-2',
-                  value: 'foo-2-2'
+                {
+                  bar: makeFieldValue({
+                    initial: 'bar-2-2',
+                    value: 'bar-2-2',
+                  }),
+                  foo: makeFieldValue({
+                    initial: 'foo-2-2',
+                    value: 'foo-2-2',
+                  }),
                 },
-                bar: {
-                  initial: 'bar-2-2',
-                  value: 'bar-2-2'
-                }
+              ],
+            },
+          ],
+        },
+      },
+      {
+        ...addArrayValue('myField[1].myField2', {bar: 'bar-2-3', foo: 'foo-2-3'}, undefined),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _error: undefined,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      myField: [
+        {
+          myField2: [
+            {
+              bar: {
+                initial: 'bar-1-1',
+                value: 'bar-1-1',
               },
-              {
-                foo: {
-                  initial: 'foo-2-3',
-                  value: 'foo-2-3'
-                },
-                bar: {
-                  initial: 'bar-2-3',
-                  value: 'bar-2-3'
-                }
+              foo: {
+                initial: 'foo-1-1',
+                value: 'foo-1-1',
               },
-            ],
-          },
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        _error: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0].myField2)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0].myField2[0])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0].myField2[0].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[0].myField2[0].bar)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[0].myField2[1])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0].myField2[1].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[0].myField2[1].bar)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[1].myField2)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[1].myField2[0])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[1].myField2[0].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1].myField2[0].bar)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1].myField2[1])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[1].myField2[1].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1].myField2[1].bar)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1].myField2[2])).toBe(false);
-    expect(isFieldValue(state.testForm.myField[1].myField2[2].foo)).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1].myField2[2].bar)).toBe(true);
-  });
+            },
+            {
+              bar: {
+                initial: 'bar-1-2',
+                value: 'bar-1-2',
+              },
+              foo: {
+                initial: 'foo-1-2',
+                value: 'foo-1-2',
+              },
+            },
+          ],
+        },
+        {
+          myField2: [
+            {
+              bar: {
+                initial: 'bar-2-1',
+                value: 'bar-2-1',
+              },
+              foo: {
+                initial: 'foo-2-1',
+                value: 'foo-2-1',
+              },
+            },
+            {
+              bar: {
+                initial: 'bar-2-2',
+                value: 'bar-2-2',
+              },
+              foo: {
+                initial: 'foo-2-2',
+                value: 'foo-2-2',
+              },
+            },
+            {
+              bar: {
+                initial: 'bar-2-3',
+                value: 'bar-2-3',
+              },
+              foo: {
+                initial: 'foo-2-3',
+                value: 'foo-2-3',
+              },
+            },
+          ],
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0].myField2)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0].myField2[0])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0].myField2[0].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[0].myField2[0].bar)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[0].myField2[1])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0].myField2[1].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[0].myField2[1].bar)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[1].myField2)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[1].myField2[0])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[1].myField2[0].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1].myField2[0].bar)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1].myField2[1])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[1].myField2[1].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1].myField2[1].bar)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1].myField2[2])).toBe(false)
+    expect(isFieldValue(state.testForm.myField[1].myField2[2].foo)).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1].myField2[2].bar)).toBe(true)
+  })
 
   it('should set value on blur with empty state', () => {
-    const state = reducer({}, {
-      ...blur('myField', 'myValue'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: 'myValue'
-        },
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...blur('myField', 'myValue'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set value on blur and touch with empty state', () => {
-    const state = reducer({}, {
-      ...blur('myField', 'myValue'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: 'myValue',
-          touched: true
-        },
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...blur('myField', 'myValue'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        touched: true,
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set value on blur and touch with initial value', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'initialValue',
-          touched: false
-        }),
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...blur('myField', 'myValue'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'myValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: false,
+            value: 'initialValue',
+          }),
         },
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...blur('myField', 'myValue'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        touched: true,
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should not modify value if undefined is passed on blur (for android react native)', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'myValue',
-          touched: false
-        }),
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...blur('myField'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'myValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: false,
+            value: 'myValue',
+          }),
         },
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...blur('myField'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        touched: true,
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should not modify value if undefined is passed on blur, even if no value existed (for android react native)', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          value: undefined
-        }),
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...blur('myField'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: undefined,
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            value: undefined,
+          }),
         },
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...blur('myField'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        touched: true,
+        value: undefined,
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set nested value on blur', () => {
-    const state = reducer({
-      foo: {
-        myField: {
-          mySubField: makeFieldValue({
-            value: undefined
-          })
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: {
+            mySubField: makeFieldValue({
+              value: undefined,
+            }),
+          },
         },
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...blur('myField.mySubField', 'hello'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          mySubField: {
-            value: 'hello',
-            touched: true
-          }
+      },
+      {
+        ...blur('myField.mySubField', 'hello'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        mySubField: {
+          touched: true,
+          value: 'hello',
         },
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField.mySubField)).toBe(true);
-  });
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField.mySubField)).toBe(true)
+  })
 
   it('should set array value on blur', () => {
-    const state = reducer({
-      foo: {
-        myArray: [
-          makeFieldValue({value: undefined})
-        ],
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...blur('myArray[0]', 'hello'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myArray: [
-          {
-            value: 'hello',
-            touched: true
-          }
-        ],
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myArray[0])).toBe(true);
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myArray: [makeFieldValue({value: undefined})],
+        },
+      },
+      {
+        ...blur('myArray[0]', 'hello'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myArray: [
+        {
+          touched: true,
+          value: 'hello',
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myArray[0])).toBe(true)
+  })
 
   it('should set value on change with empty state', () => {
-    const state = reducer({}, {
-      ...change('myField', 'myValue'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: 'myValue'
-        },
-        _active: undefined, // CHANGE doesn't touch _active
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...change('myField', 'myValue'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      // CHANGE doesn't touch _active
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set value on change and touch with empty state', () => {
-    const state = reducer({}, {
-      ...change('myField', 'myValue'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: 'myValue',
-          touched: true
-        },
-        _active: undefined, // CHANGE doesn't touch _active
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...change('myField', 'myValue'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      // CHANGE doesn't touch _active
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        touched: true,
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set value on change and touch with initial value', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'initialValue',
-          touched: false
-        }),
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: 'Some global error',
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...change('myField', 'myValue'),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'myValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: 'Some global error',
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: false,
+            value: 'initialValue',
+          }),
         },
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: 'Some global error',
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...change('myField', 'myValue'),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: 'myField',
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: 'Some global error',
+      myField: {
+        initial: 'initialValue',
+        touched: true,
+        value: 'myValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set value on change and remove field-level submit and async errors', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          value: 'initial',
-          submitError: 'submit error',
-          asyncError: 'async error'
-        }),
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: 'Some global error',
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...change('myField', 'different'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: 'different'
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: 'Some global error',
+          myField: makeFieldValue({
+            asyncError: 'async error',
+            submitError: 'submit error',
+            value: 'initial',
+          }),
         },
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: 'Some global error',
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...change('myField', 'different'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: 'myField',
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: 'Some global error',
+      myField: {
+        value: 'different',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set nested value on change with empty state', () => {
-    const state = reducer({}, {
-      ...change('myField.mySubField', 'myValue'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          mySubField: {
-            value: 'myValue'
-          }
+    const state = reducer(
+      {},
+      {
+        ...change('myField.mySubField', 'myValue'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      // CHANGE doesn't touch _active
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        mySubField: {
+          value: 'myValue',
         },
-        _active: undefined, // CHANGE doesn't touch _active
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField.mySubField)).toBe(true);
-  });
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField.mySubField)).toBe(true)
+  })
 
   it('should set visited on focus and update active with no previous state', () => {
-    const state = reducer({}, {
-      ...focus('myField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          visited: true
-        },
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...focus('myField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: 'myField',
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        visited: true,
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set visited on focus and update active on deep field with no previous state', () => {
-    const state = reducer({}, {
-      ...focus('myField.subField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          subField: {
-            visited: true
-          }
+    const state = reducer(
+      {},
+      {
+        ...focus('myField.subField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: 'myField.subField',
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        subField: {
+          visited: true,
         },
-        _active: 'myField.subField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField.subField)).toBe(true);
-  });
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField.subField)).toBe(true)
+  })
 
   it('should set visited on focus and update current with previous state', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'initialValue',
-          visited: false
-        }),
-        _active: 'otherField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...focus('myField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'initialValue',
-          visited: true
+    const state = reducer(
+      {
+        foo: {
+          _active: 'otherField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            value: 'initialValue',
+            visited: false,
+          }),
         },
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...focus('myField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: 'myField',
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        value: 'initialValue',
+        visited: true,
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set initialize values on initialize on empty state', () => {
-    const state = reducer({}, {
-      ...initialize({myField: 'initialValue'}, ['myField']),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'initialValue'
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: true,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...initialize({myField: 'initialValue'}, ['myField']),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: true,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        value: 'initialValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should allow initializing null values', () => {
-    const state = reducer({}, {
-      ...initialize({bar: 'baz', dog: null}, ['bar', 'dog']),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        bar: {
-          initial: 'baz',
-          value: 'baz'
-        },
-        dog: {
-          initial: null,
-          value: null
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: true,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.bar)).toBe(true);
-    expect(isFieldValue(state.foo.dog)).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...initialize({bar: 'baz', dog: null}, ['bar', 'dog']),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: true,
+      _submitFailed: false,
+      _submitting: false,
+      bar: {
+        initial: 'baz',
+        value: 'baz',
+      },
+      dog: {
+        initial: null,
+        value: null,
+      },
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.bar)).toBe(true)
+    expect(isFieldValue(state.foo.dog)).toBe(true)
+  })
 
   it('should initialize nested values on initialize on empty state', () => {
-    const state = reducer({}, {
-      ...initialize({myField: {subField: 'initialValue'}}, ['myField.subField'], {}),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          subField: {
-            initial: 'initialValue',
-            value: 'initialValue'
-          }
+    const state = reducer(
+      {},
+      {
+        ...initialize({myField: {subField: 'initialValue'}}, ['myField.subField'], {}),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: true,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        subField: {
+          initial: 'initialValue',
+          value: 'initialValue',
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: true,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField.subField)).toBe(true);
-  });
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField.subField)).toBe(true)
+  })
 
   it('should initialize array values on initialize on empty state', () => {
-    const state = reducer({}, {
-      ...initialize({myField: ['initialValue']}, ['myField[]'], {}),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: [
-          {
-            initial: 'initialValue',
-            value: 'initialValue'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: true,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(false);
-    expect(isFieldValue(state.foo.myField[0])).toBe(true);
-  });
+    const state = reducer(
+      {},
+      {
+        ...initialize({myField: ['initialValue']}, ['myField[]'], {}),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: true,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          initial: 'initialValue',
+          value: 'initialValue',
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(false)
+    expect(isFieldValue(state.foo.myField[0])).toBe(true)
+  })
 
   it('should initialize array values with subvalues on initialize on empty state', () => {
-    const state = reducer({}, {
-      ...initialize({
-        accounts: [
+    const state = reducer(
+      {},
+      {
+        ...initialize(
           {
-            name: 'Bobby Tables',
-            email: 'bobby@gmail.com'
+            accounts: [
+              {
+                email: 'bobby@gmail.com',
+                name: 'Bobby Tables',
+              },
+              {
+                email: 'sammy@gmail.com',
+                name: 'Sammy Tables',
+              },
+            ],
           },
-          {
-            name: 'Sammy Tables',
-            email: 'sammy@gmail.com'
-          }
-        ]
-      }, ['accounts[].name', 'accounts[].email'], {}),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        accounts: [
-          {
-            name: {
-              initial: 'Bobby Tables',
-              value: 'Bobby Tables'
-            },
-            email: {
-              initial: 'bobby@gmail.com',
-              value: 'bobby@gmail.com'
-            }
+          ['accounts[].name', 'accounts[].email'],
+          {},
+        ),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: true,
+      _submitFailed: false,
+      _submitting: false,
+      accounts: [
+        {
+          email: {
+            initial: 'bobby@gmail.com',
+            value: 'bobby@gmail.com',
           },
-          {
-            name: {
-              initial: 'Sammy Tables',
-              value: 'Sammy Tables'
-            },
-            email: {
-              initial: 'sammy@gmail.com',
-              value: 'sammy@gmail.com'
-            }
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: true,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.accounts)).toBe(false);
-    expect(isFieldValue(state.foo.accounts[0])).toBe(false);
-    expect(isFieldValue(state.foo.accounts[0].name)).toBe(true);
-    expect(isFieldValue(state.foo.accounts[0].email)).toBe(true);
-    expect(isFieldValue(state.foo.accounts[1])).toBe(false);
-    expect(isFieldValue(state.foo.accounts[1].name)).toBe(true);
-    expect(isFieldValue(state.foo.accounts[1].email)).toBe(true);
-  });
+          name: {
+            initial: 'Bobby Tables',
+            value: 'Bobby Tables',
+          },
+        },
+        {
+          email: {
+            initial: 'sammy@gmail.com',
+            value: 'sammy@gmail.com',
+          },
+          name: {
+            initial: 'Sammy Tables',
+            value: 'Sammy Tables',
+          },
+        },
+      ],
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.accounts)).toBe(false)
+    expect(isFieldValue(state.foo.accounts[0])).toBe(false)
+    expect(isFieldValue(state.foo.accounts[0].name)).toBe(true)
+    expect(isFieldValue(state.foo.accounts[0].email)).toBe(true)
+    expect(isFieldValue(state.foo.accounts[1])).toBe(false)
+    expect(isFieldValue(state.foo.accounts[1].name)).toBe(true)
+    expect(isFieldValue(state.foo.accounts[1].email)).toBe(true)
+  })
 
   it('should set initialize values, making form pristine when initializing', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          value: 'dirtyValue',
-          touched: true
-        }),
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...initialize({myField: 'cleanValue'}, ['myField']),
-      form: 'foo',
-      touch: true
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'cleanValue',
-          value: 'cleanValue'
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            touched: true,
+            value: 'dirtyValue',
+          }),
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: true,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...initialize({myField: 'cleanValue'}, ['myField']),
+        form: 'foo',
+        touch: true,
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: true,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'cleanValue',
+        value: 'cleanValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should pop an array value', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...removeArrayValue('myField'),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'foo'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+          ],
+        },
+      },
+      {
+        ...removeArrayValue('myField'),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'foo',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+  })
 
   it('should not change empty array value on remove', () => {
-    const state = reducer({
-      testForm: {
-        myField: [],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...removeArrayValue('myField'),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [],
+        },
+      },
+      {
+        ...removeArrayValue('myField'),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [],
+    })
+  })
 
   it('should remove an array value from start of array', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          }),
-          makeFieldValue({
-            value: 'baz'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...removeArrayValue('myField', 0),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'bar'
-          },
-          {
-            value: 'baz'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+            makeFieldValue({
+              value: 'baz',
+            }),
+          ],
+        },
+      },
+      {
+        ...removeArrayValue('myField', 0),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'bar',
+        },
+        {
+          value: 'baz',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+  })
 
   it('should remove an array value from middle of array', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          }),
-          makeFieldValue({
-            value: 'baz'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...removeArrayValue('myField', 1),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'foo'
-          },
-          {
-            value: 'baz'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+            makeFieldValue({
+              value: 'baz',
+            }),
+          ],
+        },
+      },
+      {
+        ...removeArrayValue('myField', 1),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'foo',
+        },
+        {
+          value: 'baz',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+  })
 
   it('should not change empty array value on swap', () => {
-    const state = reducer({
-      testForm: {
-        myField: [],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...swapArrayValues('myField'),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [],
+        },
+      },
+      {
+        ...swapArrayValues('myField'),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [],
+    })
+  })
 
   it('should should swap two array values at different indexes', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          }),
-          makeFieldValue({
-            value: 'baz'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...swapArrayValues('myField', 0, 2),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'baz'
-          },
-          {
-            value: 'bar'
-          },
-          {
-            value: 'foo'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2])).toBe(true);
-
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+            makeFieldValue({
+              value: 'baz',
+            }),
+          ],
+        },
+      },
+      {
+        ...swapArrayValues('myField', 0, 2),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'baz',
+        },
+        {
+          value: 'bar',
+        },
+        {
+          value: 'foo',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2])).toBe(true)
+  })
 
   it('should not change array on swap with the same index', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          }),
-          makeFieldValue({
-            value: 'baz'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...swapArrayValues('myField', 1, 1),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'foo'
-          },
-          {
-            value: 'bar'
-          },
-          {
-            value: 'baz'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2])).toBe(true);
-
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+            makeFieldValue({
+              value: 'baz',
+            }),
+          ],
+        },
+      },
+      {
+        ...swapArrayValues('myField', 1, 1),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'foo',
+        },
+        {
+          value: 'bar',
+        },
+        {
+          value: 'baz',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2])).toBe(true)
+  })
 
   it('should not change array on swap with out of bounds index', () => {
-    const state = reducer({
-      testForm: {
-        myField: [
-          makeFieldValue({
-            value: 'foo'
-          }),
-          makeFieldValue({
-            value: 'bar'
-          }),
-          makeFieldValue({
-            value: 'baz'
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...swapArrayValues('myField', 1, 4),
-      form: 'testForm'
-    });
-    expect(state.testForm)
-      .toEqual({
-        myField: [
-          {
-            value: 'foo'
-          },
-          {
-            value: 'bar'
-          },
-          {
-            value: 'baz'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.testForm.myField)).toBe(false);
-    expect(isFieldValue(state.testForm.myField[0])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[1])).toBe(true);
-    expect(isFieldValue(state.testForm.myField[2])).toBe(true);
-
-  });
+    const state = reducer(
+      {
+        testForm: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: [
+            makeFieldValue({
+              value: 'foo',
+            }),
+            makeFieldValue({
+              value: 'bar',
+            }),
+            makeFieldValue({
+              value: 'baz',
+            }),
+          ],
+        },
+      },
+      {
+        ...swapArrayValues('myField', 1, 4),
+        form: 'testForm',
+      },
+    )
+    expect(state.testForm).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: [
+        {
+          value: 'foo',
+        },
+        {
+          value: 'bar',
+        },
+        {
+          value: 'baz',
+        },
+      ],
+    })
+    expect(isFieldValue(state.testForm.myField)).toBe(false)
+    expect(isFieldValue(state.testForm.myField[0])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[1])).toBe(true)
+    expect(isFieldValue(state.testForm.myField[2])).toBe(true)
+  })
 
   it('should reset values on reset on with previous state', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        }),
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...reset(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'initialValue'
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: true,
+            value: 'dirtyValue',
+          }),
+          myOtherField: makeFieldValue({
+            initial: 'otherInitialValue',
+            touched: true,
+            value: 'otherDirtyValue',
+          }),
         },
-        myOtherField: {
-          initial: 'otherInitialValue',
-          value: 'otherInitialValue'
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...reset(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        value: 'initialValue',
+      },
+      myOtherField: {
+        initial: 'otherInitialValue',
+        value: 'otherInitialValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should reset deep values on reset on with previous state', () => {
-    const state = reducer({
-      foo: {
-        deepField: {
-          myField: makeFieldValue({
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true
-          }),
-          myOtherField: makeFieldValue({
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true
-          })
-        },
-        _active: 'myField',
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...reset(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        deepField: {
-          myField: {
-            initial: 'initialValue',
-            value: 'initialValue'
+    const state = reducer(
+      {
+        foo: {
+          _active: 'myField',
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          deepField: {
+            myField: makeFieldValue({
+              initial: 'initialValue',
+              touched: true,
+              value: 'dirtyValue',
+            }),
+            myOtherField: makeFieldValue({
+              initial: 'otherInitialValue',
+              touched: true,
+              value: 'otherDirtyValue',
+            }),
           },
-          myOtherField: {
-            initial: 'otherInitialValue',
-            value: 'otherInitialValue'
-          }
+          [globalErrorKey]: undefined,
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.deepField)).toBe(false);
-    expect(isFieldValue(state.foo.deepField.myField)).toBe(true);
-    expect(isFieldValue(state.foo.deepField.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...reset(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      deepField: {
+        myField: {
+          initial: 'initialValue',
+          value: 'initialValue',
+        },
+        myOtherField: {
+          initial: 'otherInitialValue',
+          value: 'otherInitialValue',
+        },
+      },
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.deepField)).toBe(false)
+    expect(isFieldValue(state.foo.deepField.myField)).toBe(true)
+    expect(isFieldValue(state.foo.deepField.myOtherField)).toBe(true)
+  })
 
   it('should set asyncValidating on startAsyncValidation', () => {
-    const state = reducer({
-      foo: {
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...startAsyncValidation(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: true,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          doesnt: 'matter',
+          [globalErrorKey]: undefined,
+          should: 'notchange',
+        },
+      },
+      {
+        ...startAsyncValidation(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: true,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      doesnt: 'matter',
+      [globalErrorKey]: undefined,
+      should: 'notchange',
+    })
+  })
 
   it('should set asyncValidating with field name on startAsyncValidation', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'initialValue'
-        }),
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...startAsyncValidation('myField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'initialValue'
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          doesnt: 'matter',
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            value: 'initialValue',
+          }),
+          should: 'notchange',
         },
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: 'myField',
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-  });
+      },
+      {
+        ...startAsyncValidation('myField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: 'myField',
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      doesnt: 'matter',
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        value: 'initialValue',
+      },
+      should: 'notchange',
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+  })
 
   it('should set submitting on startSubmit', () => {
-    const state = reducer({
-      foo: {
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...startSubmit(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: false
-      });
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          doesnt: 'matter',
+          [globalErrorKey]: undefined,
+          should: 'notchange',
+        },
+      },
+      {
+        ...startSubmit(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: true,
+      doesnt: 'matter',
+      [globalErrorKey]: undefined,
+      should: 'notchange',
+    })
+  })
 
   it('should set submitting on startSubmit, and NOT reset submitFailed', () => {
-    const state = reducer({
-      foo: {
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: true
-      }
-    }, {
-      ...startSubmit(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: true
-      });
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: true,
+          _submitting: false,
+          doesnt: 'matter',
+          [globalErrorKey]: undefined,
+          should: 'notchange',
+        },
+      },
+      {
+        ...startSubmit(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: true,
+      _submitting: true,
+      doesnt: 'matter',
+      [globalErrorKey]: undefined,
+      should: 'notchange',
+    })
+  })
 
   it('should set asyncError on nested fields on stopAsyncValidation', () => {
-    const state = reducer({
-      foo: {
-        bar: {
-          myField: makeFieldValue({
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true
-          }),
-          myOtherField: makeFieldValue({
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true
-          })
-        },
-        _active: undefined,
-        _asyncValidating: true,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...stopAsyncValidation({
-        bar: {
-          myField: 'Error about myField',
-          myOtherField: 'Error about myOtherField'
-        }
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        bar: {
-          myField: {
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true,
-            asyncError: 'Error about myField'
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: true,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          bar: {
+            myField: makeFieldValue({
+              initial: 'initialValue',
+              touched: true,
+              value: 'dirtyValue',
+            }),
+            myOtherField: makeFieldValue({
+              initial: 'otherInitialValue',
+              touched: true,
+              value: 'otherDirtyValue',
+            }),
           },
-          myOtherField: {
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true,
-            asyncError: 'Error about myOtherField'
-          }
+          [globalErrorKey]: undefined,
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.bar)).toBe(false);
-    expect(isFieldValue(state.foo.bar.myField)).toBe(true);
-    expect(isFieldValue(state.foo.bar.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopAsyncValidation({
+          bar: {
+            myField: 'Error about myField',
+            myOtherField: 'Error about myOtherField',
+          },
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      bar: {
+        myField: {
+          asyncError: 'Error about myField',
+          initial: 'initialValue',
+          touched: true,
+          value: 'dirtyValue',
+        },
+        myOtherField: {
+          asyncError: 'Error about myOtherField',
+          initial: 'otherInitialValue',
+          touched: true,
+          value: 'otherDirtyValue',
+        },
+      },
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.bar)).toBe(false)
+    expect(isFieldValue(state.foo.bar.myField)).toBe(true)
+    expect(isFieldValue(state.foo.bar.myOtherField)).toBe(true)
+  })
 
   it('should set asyncError on array fields on stopAsyncValidation', () => {
-    const state = reducer({
-      foo: {
-        bar: [
-          makeFieldValue({
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true
-          }),
-          makeFieldValue({
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: true,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...stopAsyncValidation({
-        bar: [
-          'Error about myField',
-          'Error about myOtherField'
-        ]
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        bar: [
-          {
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true,
-            asyncError: 'Error about myField'
-          },
-          {
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true,
-            asyncError: 'Error about myOtherField'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.bar)).toBe(false);
-    expect(isFieldValue(state.foo.bar[0])).toBe(true);
-    expect(isFieldValue(state.foo.bar[1])).toBe(true);
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: true,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          bar: [
+            makeFieldValue({
+              initial: 'initialValue',
+              touched: true,
+              value: 'dirtyValue',
+            }),
+            makeFieldValue({
+              initial: 'otherInitialValue',
+              touched: true,
+              value: 'otherDirtyValue',
+            }),
+          ],
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...stopAsyncValidation({
+          bar: ['Error about myField', 'Error about myOtherField'],
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      bar: [
+        {
+          asyncError: 'Error about myField',
+          initial: 'initialValue',
+          touched: true,
+          value: 'dirtyValue',
+        },
+        {
+          asyncError: 'Error about myOtherField',
+          initial: 'otherInitialValue',
+          touched: true,
+          value: 'otherDirtyValue',
+        },
+      ],
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.bar)).toBe(false)
+    expect(isFieldValue(state.foo.bar[0])).toBe(true)
+    expect(isFieldValue(state.foo.bar[1])).toBe(true)
+  })
 
   it('should unset asyncValidating on stopAsyncValidation', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        }),
-        _active: undefined,
-        _asyncValidating: true,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...stopAsyncValidation({
-        myField: 'Error about myField',
-        myOtherField: 'Error about myOtherField'
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true,
-          asyncError: 'Error about myField'
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: true,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: true,
+            value: 'dirtyValue',
+          }),
+          myOtherField: makeFieldValue({
+            initial: 'otherInitialValue',
+            touched: true,
+            value: 'otherDirtyValue',
+          }),
         },
-        myOtherField: {
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true,
-          asyncError: 'Error about myOtherField'
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopAsyncValidation({
+          myField: 'Error about myField',
+          myOtherField: 'Error about myOtherField',
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        asyncError: 'Error about myField',
+        initial: 'initialValue',
+        touched: true,
+        value: 'dirtyValue',
+      },
+      myOtherField: {
+        asyncError: 'Error about myOtherField',
+        initial: 'otherInitialValue',
+        touched: true,
+        value: 'otherDirtyValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should unset field async errors on stopAsyncValidation', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          asyncError: 'myFieldError',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          asyncError: 'myOtherFieldError',
-          touched: true
-        }),
-        _active: undefined,
-        _asyncValidating: true,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...stopAsyncValidation(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: true,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            asyncError: 'myFieldError',
+            initial: 'initialValue',
+            touched: true,
+            value: 'dirtyValue',
+          }),
+          myOtherField: makeFieldValue({
+            asyncError: 'myOtherFieldError',
+            initial: 'otherInitialValue',
+            touched: true,
+            value: 'otherDirtyValue',
+          }),
         },
-        myOtherField: {
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopAsyncValidation(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        touched: true,
+        value: 'dirtyValue',
+      },
+      myOtherField: {
+        initial: 'otherInitialValue',
+        touched: true,
+        value: 'otherDirtyValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should unset asyncValidating on stopAsyncValidation and set global error', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        }),
-        _active: undefined,
-        _asyncValidating: true,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...stopAsyncValidation({
-        [globalErrorKey]: 'This is a global error'
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: true,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: true,
+            value: 'dirtyValue',
+          }),
+          myOtherField: makeFieldValue({
+            initial: 'otherInitialValue',
+            touched: true,
+            value: 'otherDirtyValue',
+          }),
         },
-        myOtherField: {
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: 'This is a global error',
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopAsyncValidation({
+          [globalErrorKey]: 'This is a global error',
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: 'This is a global error',
+      myField: {
+        initial: 'initialValue',
+        touched: true,
+        value: 'dirtyValue',
+      },
+      myOtherField: {
+        initial: 'otherInitialValue',
+        touched: true,
+        value: 'otherDirtyValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should unset submitting on stopSubmit', () => {
-    const state = reducer({
-      foo: {
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: false
-      }
-    }, {
-      ...stopSubmit(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: true,
+          doesnt: 'matter',
+          [globalErrorKey]: undefined,
+          should: 'notchange',
+        },
+      },
+      {
+        ...stopSubmit(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      doesnt: 'matter',
+      [globalErrorKey]: undefined,
+      should: 'notchange',
+    })
+  })
 
   it('should set submitError on nested fields on stopSubmit', () => {
-    const state = reducer({
-      foo: {
-        bar: {
-          myField: makeFieldValue({
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true
-          }),
-          myOtherField: makeFieldValue({
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true
-          })
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: false
-      }
-    }, {
-      ...stopSubmit({
-        bar: {
-          myField: 'Error about myField',
-          myOtherField: 'Error about myOtherField'
-        }
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        bar: {
-          myField: {
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true,
-            submitError: 'Error about myField'
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: true,
+          bar: {
+            myField: makeFieldValue({
+              initial: 'initialValue',
+              touched: true,
+              value: 'dirtyValue',
+            }),
+            myOtherField: makeFieldValue({
+              initial: 'otherInitialValue',
+              touched: true,
+              value: 'otherDirtyValue',
+            }),
           },
-          myOtherField: {
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true,
-            submitError: 'Error about myOtherField'
-          }
+          [globalErrorKey]: undefined,
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: true
-      });
-    expect(isFieldValue(state.foo.bar)).toBe(false);
-    expect(isFieldValue(state.foo.bar.myField)).toBe(true);
-    expect(isFieldValue(state.foo.bar.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopSubmit({
+          bar: {
+            myField: 'Error about myField',
+            myOtherField: 'Error about myOtherField',
+          },
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: true,
+      _submitting: false,
+      bar: {
+        myField: {
+          initial: 'initialValue',
+          submitError: 'Error about myField',
+          touched: true,
+          value: 'dirtyValue',
+        },
+        myOtherField: {
+          initial: 'otherInitialValue',
+          submitError: 'Error about myOtherField',
+          touched: true,
+          value: 'otherDirtyValue',
+        },
+      },
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.bar)).toBe(false)
+    expect(isFieldValue(state.foo.bar.myField)).toBe(true)
+    expect(isFieldValue(state.foo.bar.myOtherField)).toBe(true)
+  })
 
   it('should set submitError on array fields on stopSubmit', () => {
-    const state = reducer({
-      foo: {
-        bar: [
-          makeFieldValue({
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true
-          }),
-          makeFieldValue({
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: false
-      }
-    }, {
-      ...stopSubmit({
-        bar: [
-          'Error about myField',
-          'Error about myOtherField'
-        ]
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        bar: [
-          {
-            initial: 'initialValue',
-            value: 'dirtyValue',
-            touched: true,
-            submitError: 'Error about myField'
-          },
-          {
-            initial: 'otherInitialValue',
-            value: 'otherDirtyValue',
-            touched: true,
-            submitError: 'Error about myOtherField'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: true
-      });
-    expect(isFieldValue(state.foo.bar)).toBe(false);
-    expect(isFieldValue(state.foo.bar[0])).toBe(true);
-    expect(isFieldValue(state.foo.bar[1])).toBe(true);
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: true,
+          bar: [
+            makeFieldValue({
+              initial: 'initialValue',
+              touched: true,
+              value: 'dirtyValue',
+            }),
+            makeFieldValue({
+              initial: 'otherInitialValue',
+              touched: true,
+              value: 'otherDirtyValue',
+            }),
+          ],
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...stopSubmit({
+          bar: ['Error about myField', 'Error about myOtherField'],
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: true,
+      _submitting: false,
+      bar: [
+        {
+          initial: 'initialValue',
+          submitError: 'Error about myField',
+          touched: true,
+          value: 'dirtyValue',
+        },
+        {
+          initial: 'otherInitialValue',
+          submitError: 'Error about myOtherField',
+          touched: true,
+          value: 'otherDirtyValue',
+        },
+      ],
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.bar)).toBe(false)
+    expect(isFieldValue(state.foo.bar[0])).toBe(true)
+    expect(isFieldValue(state.foo.bar[1])).toBe(true)
+  })
 
   it('should unset submitFailed on stopSubmit with no errors', () => {
-    const state = reducer({
-      foo: {
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: true
-      }
-    }, {
-      ...stopSubmit(),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        doesnt: 'matter',
-        should: 'notchange',
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: true,
+          _submitting: true,
+          doesnt: 'matter',
+          [globalErrorKey]: undefined,
+          should: 'notchange',
+        },
+      },
+      {
+        ...stopSubmit(),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      doesnt: 'matter',
+      [globalErrorKey]: undefined,
+      should: 'notchange',
+    })
+  })
 
   it('should unset submitting and set submit errors on stopSubmit', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        }),
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: false
-      }
-    }, {
-      ...stopSubmit({
-        myField: 'Error about myField',
-        myOtherField: 'Error about myOtherField'
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true,
-          submitError: 'Error about myField'
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: true,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: true,
+            value: 'dirtyValue',
+          }),
+          myOtherField: makeFieldValue({
+            initial: 'otherInitialValue',
+            touched: true,
+            value: 'otherDirtyValue',
+          }),
         },
-        myOtherField: {
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true,
-          submitError: 'Error about myOtherField'
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: true
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopSubmit({
+          myField: 'Error about myField',
+          myOtherField: 'Error about myOtherField',
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: true,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        initial: 'initialValue',
+        submitError: 'Error about myField',
+        touched: true,
+        value: 'dirtyValue',
+      },
+      myOtherField: {
+        initial: 'otherInitialValue',
+        submitError: 'Error about myOtherField',
+        touched: true,
+        value: 'otherDirtyValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should unset submitting and set submit global error on stopSubmit', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        }),
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: true,
-        _submitFailed: false
-      }
-    }, {
-      ...stopSubmit({
-        [globalErrorKey]: 'This is a global error'
-      }),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          initial: 'initialValue',
-          value: 'dirtyValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: true,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            initial: 'initialValue',
+            touched: true,
+            value: 'dirtyValue',
+          }),
+          myOtherField: makeFieldValue({
+            initial: 'otherInitialValue',
+            touched: true,
+            value: 'otherDirtyValue',
+          }),
         },
-        myOtherField: {
-          initial: 'otherInitialValue',
-          value: 'otherDirtyValue',
-          touched: true
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: 'This is a global error',
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: true
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...stopSubmit({
+          [globalErrorKey]: 'This is a global error',
+        }),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: true,
+      _submitting: false,
+      [globalErrorKey]: 'This is a global error',
+      myField: {
+        initial: 'initialValue',
+        touched: true,
+        value: 'dirtyValue',
+      },
+      myOtherField: {
+        initial: 'otherInitialValue',
+        touched: true,
+        value: 'otherDirtyValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should mark fields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          value: 'initialValue',
-          touched: false
-        }),
-        myOtherField: makeFieldValue({
-          value: 'otherInitialValue',
-          touched: false
-        }),
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('myField', 'myOtherField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myField: {
-          value: 'initialValue',
-          touched: true
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            touched: false,
+            value: 'initialValue',
+          }),
+          myOtherField: makeFieldValue({
+            touched: false,
+            value: 'otherInitialValue',
+          }),
         },
-        myOtherField: {
-          value: 'otherInitialValue',
-          touched: true
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      {
+        ...touch('myField', 'myOtherField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        touched: true,
+        value: 'initialValue',
+      },
+      myOtherField: {
+        touched: true,
+        value: 'otherInitialValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
 
   it('should mark deep fields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        deep: {
-          myField: makeFieldValue({
-            value: 'initialValue',
-            touched: false
-          }),
-          myOtherField: makeFieldValue({
-            value: 'otherInitialValue',
-            touched: false
-          }),
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('deep.myField', 'deep.myOtherField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        deep: {
-          myField: {
-            value: 'initialValue',
-            touched: true
-          },
-          myOtherField: {
-            value: 'otherInitialValue',
-            touched: true
-          }
-        },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.deep)).toBe(false);
-    expect(isFieldValue(state.foo.deep.myField)).toBe(true);
-    expect(isFieldValue(state.foo.deep.myOtherField)).toBe(true);
-  });
-
-  it('should mark array fields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        myFields: [
-          makeFieldValue({
-            value: 'initialValue',
-            touched: false
-          }),
-          makeFieldValue({
-            value: 'otherInitialValue',
-            touched: false
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('myFields[0]', 'myFields[1]'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myFields: [
-          {
-            value: 'initialValue',
-            touched: true
-          },
-          {
-            value: 'otherInitialValue',
-            touched: true
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myFields)).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0])).toBe(true);
-    expect(isFieldValue(state.foo.myFields[1])).toBe(true);
-  });
-
-  it('should mark index-less array fields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        myFields: [
-          makeFieldValue({
-            value: 'initialValue',
-            touched: false
-          }),
-          makeFieldValue({
-            value: 'otherInitialValue',
-            touched: false
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('myFields[]'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myFields: [
-          {
-            value: 'initialValue',
-            touched: true
-          },
-          {
-            value: 'otherInitialValue',
-            touched: true
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myFields)).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0])).toBe(true);
-    expect(isFieldValue(state.foo.myFields[1])).toBe(true);
-  });
-
-  it('should mark index-less array subfields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        myFields: [
-          {
-            name: makeFieldValue({
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          deep: {
+            myField: makeFieldValue({
+              touched: false,
               value: 'initialValue',
-              touched: false
-            })
-          },
-          {
-            name: makeFieldValue({
+            }),
+            myOtherField: makeFieldValue({
+              touched: false,
               value: 'otherInitialValue',
-              touched: false
-            })
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('myFields[].name'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myFields: [
-          {
-            name: {
-              value: 'initialValue',
-              touched: true
-            }
+            }),
           },
-          {
-            name: {
-              value: 'otherInitialValue',
-              touched: true
-            }
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myFields)).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0])).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0].name)).toBe(true);
-    expect(isFieldValue(state.foo.myFields[1])).toBe(false);
-    expect(isFieldValue(state.foo.myFields[1].name)).toBe(true);
-  });
-
-  it('should ignore empty index-less array fields on touch', () => {
-    const state = reducer({
-      foo: {
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('myFields[]'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
-
-  it('should ignore empty index-less array subfields on touch', () => {
-    const state = reducer({
-      foo: {
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...touch('myFields[].name'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-  });
-
-  it('should unmark fields as touched on untouch', () => {
-    const state = reducer({
-      foo: {
-        myField: makeFieldValue({
-          value: 'initialValue',
-          touched: true
-        }),
-        myOtherField: makeFieldValue({
-          value: 'otherInitialValue',
-          touched: true
-        }),
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...untouch('myField', 'myOtherField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...touch('deep.myField', 'deep.myOtherField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      deep: {
         myField: {
-          value: 'initialValue'
+          touched: true,
+          value: 'initialValue',
         },
         myOtherField: {
-          value: 'otherInitialValue'
+          touched: true,
+          value: 'otherInitialValue',
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myField)).toBe(true);
-    expect(isFieldValue(state.foo.myOtherField)).toBe(true);
-  });
+      },
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.deep)).toBe(false)
+    expect(isFieldValue(state.foo.deep.myField)).toBe(true)
+    expect(isFieldValue(state.foo.deep.myOtherField)).toBe(true)
+  })
 
-  it('should unmark deep fields as touched on untouch', () => {
-    const state = reducer({
-      foo: {
-        deep: {
-          myField: makeFieldValue({
-            value: 'initialValue',
-            touched: true
-          }),
-          myOtherField: makeFieldValue({
-            value: 'otherInitialValue',
-            touched: true
-          })
+  it('should mark array fields as touched on touch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myFields: [
+            makeFieldValue({
+              touched: false,
+              value: 'initialValue',
+            }),
+            makeFieldValue({
+              touched: false,
+              value: 'otherInitialValue',
+            }),
+          ],
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...untouch('deep.myField', 'deep.myOtherField'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        deep: {
-          myField: {
-            value: 'initialValue'
-          },
-          myOtherField: {
-            value: 'otherInitialValue'
-          }
+      },
+      {
+        ...touch('myFields[0]', 'myFields[1]'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myFields: [
+        {
+          touched: true,
+          value: 'initialValue',
         },
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.deep)).toBe(false);
-    expect(isFieldValue(state.foo.deep.myField)).toBe(true);
-    expect(isFieldValue(state.foo.deep.myOtherField)).toBe(true);
-  });
-
-  it('should unmark array fields as touched on untouch', () => {
-    const state = reducer({
-      foo: {
-        myFields: [
-          makeFieldValue({
-            value: 'initialValue',
-            touched: true
-          }),
-          makeFieldValue({
-            value: 'otherInitialValue',
-            touched: true
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...untouch('myFields[0]', 'myFields[1]'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myFields: [
-          {
-            value: 'initialValue'
-          },
-          {
-            value: 'otherInitialValue'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myFields)).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0])).toBe(true);
-    expect(isFieldValue(state.foo.myFields[1])).toBe(true);
-  });
+        {
+          touched: true,
+          value: 'otherInitialValue',
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myFields)).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0])).toBe(true)
+    expect(isFieldValue(state.foo.myFields[1])).toBe(true)
+  })
 
   it('should mark index-less array fields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        myFields: [
-          makeFieldValue({
-            value: 'initialValue',
-            touched: true
-          }),
-          makeFieldValue({
-            value: 'otherInitialValue',
-            touched: true
-          })
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...untouch('myFields[]'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myFields: [
-          {
-            value: 'initialValue'
-          },
-          {
-            value: 'otherInitialValue'
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myFields)).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0])).toBe(true);
-    expect(isFieldValue(state.foo.myFields[1])).toBe(true);
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myFields: [
+            makeFieldValue({
+              touched: false,
+              value: 'initialValue',
+            }),
+            makeFieldValue({
+              touched: false,
+              value: 'otherInitialValue',
+            }),
+          ],
+        },
+      },
+      {
+        ...touch('myFields[]'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myFields: [
+        {
+          touched: true,
+          value: 'initialValue',
+        },
+        {
+          touched: true,
+          value: 'otherInitialValue',
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myFields)).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0])).toBe(true)
+    expect(isFieldValue(state.foo.myFields[1])).toBe(true)
+  })
 
   it('should mark index-less array subfields as touched on touch', () => {
-    const state = reducer({
-      foo: {
-        myFields: [
-          {
-            name: makeFieldValue({
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myFields: [
+            {
+              name: makeFieldValue({
+                touched: false,
+                value: 'initialValue',
+              }),
+            },
+            {
+              name: makeFieldValue({
+                touched: false,
+                value: 'otherInitialValue',
+              }),
+            },
+          ],
+        },
+      },
+      {
+        ...touch('myFields[].name'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myFields: [
+        {
+          name: {
+            touched: true,
+            value: 'initialValue',
+          },
+        },
+        {
+          name: {
+            touched: true,
+            value: 'otherInitialValue',
+          },
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myFields)).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0])).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0].name)).toBe(true)
+    expect(isFieldValue(state.foo.myFields[1])).toBe(false)
+    expect(isFieldValue(state.foo.myFields[1].name)).toBe(true)
+  })
+
+  it('should ignore empty index-less array fields on touch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...touch('myFields[]'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+    })
+  })
+
+  it('should ignore empty index-less array subfields on touch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...touch('myFields[].name'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+    })
+  })
+
+  it('should unmark fields as touched on untouch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myField: makeFieldValue({
+            touched: true,
+            value: 'initialValue',
+          }),
+          myOtherField: makeFieldValue({
+            touched: true,
+            value: 'otherInitialValue',
+          }),
+        },
+      },
+      {
+        ...untouch('myField', 'myOtherField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myField: {
+        value: 'initialValue',
+      },
+      myOtherField: {
+        value: 'otherInitialValue',
+      },
+    })
+    expect(isFieldValue(state.foo.myField)).toBe(true)
+    expect(isFieldValue(state.foo.myOtherField)).toBe(true)
+  })
+
+  it('should unmark deep fields as touched on untouch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          deep: {
+            myField: makeFieldValue({
+              touched: true,
               value: 'initialValue',
-              touched: true
-            })
-          },
-          {
-            name: makeFieldValue({
+            }),
+            myOtherField: makeFieldValue({
+              touched: true,
               value: 'otherInitialValue',
-              touched: true
-            })
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...untouch('myFields[].name'),
-      form: 'foo'
-    });
-    expect(state.foo)
-      .toEqual({
-        myFields: [
-          {
-            name: {
-              value: 'initialValue'
-            }
+            }),
           },
-          {
-            name: {
-              value: 'otherInitialValue'
-            }
-          }
-        ],
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      });
-    expect(isFieldValue(state.foo.myFields)).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0])).toBe(false);
-    expect(isFieldValue(state.foo.myFields[0].name)).toBe(true);
-    expect(isFieldValue(state.foo.myFields[1])).toBe(false);
-    expect(isFieldValue(state.foo.myFields[1].name)).toBe(true);
-  });
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...untouch('deep.myField', 'deep.myOtherField'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      deep: {
+        myField: {
+          value: 'initialValue',
+        },
+        myOtherField: {
+          value: 'otherInitialValue',
+        },
+      },
+      [globalErrorKey]: undefined,
+    })
+    expect(isFieldValue(state.foo.deep)).toBe(false)
+    expect(isFieldValue(state.foo.deep.myField)).toBe(true)
+    expect(isFieldValue(state.foo.deep.myOtherField)).toBe(true)
+  })
+
+  it('should unmark array fields as touched on untouch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myFields: [
+            makeFieldValue({
+              touched: true,
+              value: 'initialValue',
+            }),
+            makeFieldValue({
+              touched: true,
+              value: 'otherInitialValue',
+            }),
+          ],
+        },
+      },
+      {
+        ...untouch('myFields[0]', 'myFields[1]'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myFields: [
+        {
+          value: 'initialValue',
+        },
+        {
+          value: 'otherInitialValue',
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myFields)).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0])).toBe(true)
+    expect(isFieldValue(state.foo.myFields[1])).toBe(true)
+  })
+
+  it('should mark index-less array fields as touched on touch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myFields: [
+            makeFieldValue({
+              touched: true,
+              value: 'initialValue',
+            }),
+            makeFieldValue({
+              touched: true,
+              value: 'otherInitialValue',
+            }),
+          ],
+        },
+      },
+      {
+        ...untouch('myFields[]'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myFields: [
+        {
+          value: 'initialValue',
+        },
+        {
+          value: 'otherInitialValue',
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myFields)).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0])).toBe(true)
+    expect(isFieldValue(state.foo.myFields[1])).toBe(true)
+  })
+
+  it('should mark index-less array subfields as touched on touch', () => {
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+          myFields: [
+            {
+              name: makeFieldValue({
+                touched: true,
+                value: 'initialValue',
+              }),
+            },
+            {
+              name: makeFieldValue({
+                touched: true,
+                value: 'otherInitialValue',
+              }),
+            },
+          ],
+        },
+      },
+      {
+        ...untouch('myFields[].name'),
+        form: 'foo',
+      },
+    )
+    expect(state.foo).toEqual({
+      _active: undefined,
+      _asyncValidating: false,
+      _initialized: false,
+      _submitFailed: false,
+      _submitting: false,
+      [globalErrorKey]: undefined,
+      myFields: [
+        {
+          name: {
+            value: 'initialValue',
+          },
+        },
+        {
+          name: {
+            value: 'otherInitialValue',
+          },
+        },
+      ],
+    })
+    expect(isFieldValue(state.foo.myFields)).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0])).toBe(false)
+    expect(isFieldValue(state.foo.myFields[0].name)).toBe(true)
+    expect(isFieldValue(state.foo.myFields[1])).toBe(false)
+    expect(isFieldValue(state.foo.myFields[1].name)).toBe(true)
+  })
 
   it('should destroy forms on destroy', () => {
-    const state = reducer({
-      foo: {
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
+    const state = reducer(
+      {
+        bar: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+        },
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+        },
       },
+      {
+        ...destroy(),
+        form: 'foo',
+      },
+    )
+    expect(state).toEqual({
       bar: {
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...destroy(),
-      form: 'foo'
-    });
-    expect(state)
-      .toEqual({
-        bar: {
-          _active: undefined,
-          _asyncValidating: false,
-          [globalErrorKey]: undefined,
-          _initialized: false,
-          _submitting: false,
-          _submitFailed: false
-        }
-      });
-  });
+        [globalErrorKey]: undefined,
+      },
+    })
+  })
 
   it('should destroy last form on destroy', () => {
-    const state = reducer({
-      foo: {
-        _active: undefined,
-        _asyncValidating: false,
-        [globalErrorKey]: undefined,
-        _initialized: false,
-        _submitting: false,
-        _submitFailed: false
-      }
-    }, {
-      ...destroy(),
-      form: 'foo'
-    });
-    expect(state)
-      .toEqual({});
-  });
+    const state = reducer(
+      {
+        foo: {
+          _active: undefined,
+          _asyncValidating: false,
+          _initialized: false,
+          _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
+        },
+      },
+      {
+        ...destroy(),
+        form: 'foo',
+      },
+    )
+    expect(state).toEqual({})
+  })
 
   it('should destroy form and formkey on destroy', () => {
-    const destroyWithKey = (key) => bindActionData(destroy, {key})();
-    const state = reducer({
-      fooForm: {
-        barKey: {
-          _active: undefined,
-          _asyncValidating: false,
-          [globalErrorKey]: undefined,
-          _initialized: false,
-          _submitting: false,
-          _submitFailed: false
+    const destroyWithKey = key => bindActionData(destroy, {key})()
+    const state = reducer(
+      {
+        fooForm: {
+          barKey: {
+            _active: undefined,
+            _asyncValidating: false,
+            _initialized: false,
+            _submitFailed: false,
+            _submitting: false,
+            [globalErrorKey]: undefined,
+          },
+          bazKey: {
+            _active: undefined,
+            _asyncValidating: false,
+            _initialized: false,
+            _submitFailed: false,
+            _submitting: false,
+            [globalErrorKey]: undefined,
+          },
         },
-        bazKey: {
-          _active: undefined,
-          _asyncValidating: false,
-          [globalErrorKey]: undefined,
-          _initialized: false,
-          _submitting: false,
-          _submitFailed: false
-        }
-      }
-    }, {
-      ...destroyWithKey('barKey'),
-      form: 'fooForm'
-    });
+      },
+      {
+        ...destroyWithKey('barKey'),
+        form: 'fooForm',
+      },
+    )
     expect(state.fooForm).toEqual({
       bazKey: {
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      }
-    });
-  });
+        [globalErrorKey]: undefined,
+      },
+    })
+  })
 
   describe('reducer.plugin', () => {
     it('should initialize form state when there is a reducer plugin', () => {
       const result = reducer.plugin({
-        foo: (state) => state
-      })();
-      expect(result)
-        .toExist()
-        .toBeA('object');
-      expect(Object.keys(result).length).toBe(1);
+        foo: state => state,
+      })()
+      expect(result).toExist().toBeA('object')
+      expect(Object.keys(result).length).toBe(1)
       expect(result.foo)
         .toExist()
         .toBeA('object')
         .toEqual({
           _active: undefined,
           _asyncValidating: false,
-          [globalErrorKey]: undefined,
           _initialized: false,
+          _submitFailed: false,
           _submitting: false,
-          _submitFailed: false
-        });
-    });
-  });
+          [globalErrorKey]: undefined,
+        })
+    })
+  })
 
   describe('reducer.normalize', () => {
     it('should initialize form state when there is a normalizer', () => {
       const state = reducer.normalize({
         foo: {
-          'myField': () => 'normalized',
+          myField: () => 'normalized',
           'person.name': () => 'John Doe',
-          'pets[].name': () => 'Fido'
-        }
-      })();
-      expect(state)
-        .toExist()
-        .toBeA('object');
-      expect(Object.keys(state).length).toBe(1);
+          'pets[].name': () => 'Fido',
+        },
+      })()
+      expect(state).toExist().toBeA('object')
+      expect(Object.keys(state).length).toBe(1)
       expect(state.foo)
         .toExist()
         .toBeA('object')
         .toEqual({
           _active: undefined,
           _asyncValidating: false,
-          [globalErrorKey]: undefined,
           _initialized: false,
-          _submitting: false,
           _submitFailed: false,
+          _submitting: false,
+          [globalErrorKey]: undefined,
           myField: {
-            value: 'normalized'
+            value: 'normalized',
           },
           person: {
             name: {
-              value: 'John Doe'
-            }
+              value: 'John Doe',
+            },
           },
-          pets: []
-        });
-    });
+          pets: [],
+        })
+    })
 
     it('should normalize keyed forms depending on action form key', () => {
       const defaultFields = {
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      };
+        [globalErrorKey]: undefined,
+      }
       const normalize = reducer.normalize({
         foo: {
-          'myField': () => 'normalized',
+          myField: () => 'normalized',
           'person.name': () => 'John Doe',
-          'pets[].name': () => 'Fido'
-        }
-      });
-      const state = normalize({
-        foo: {
-          firstSubform: {}
-        }
-      }, {
-        form: 'foo',
-        key: 'firstSubform'
-      });
+          'pets[].name': () => 'Fido',
+        },
+      })
+      const state = normalize(
+        {
+          foo: {
+            firstSubform: {},
+          },
+        },
+        {
+          form: 'foo',
+          key: 'firstSubform',
+        },
+      )
       const nextState = normalize(state, {
         form: 'foo',
-        key: 'secondSubForm'
-      });
-      expect(state)
-        .toExist()
-        .toBeA('object');
-      expect(Object.keys(state).length).toBe(1);
+        key: 'secondSubForm',
+      })
+      expect(state).toExist().toBeA('object')
+      expect(Object.keys(state).length).toBe(1)
       expect(state.foo)
         .toExist()
         .toBeA('object')
@@ -3028,234 +3174,274 @@ describe('reducer', () => {
           firstSubform: {
             ...defaultFields,
             myField: {
-              value: 'normalized'
+              value: 'normalized',
             },
             person: {
               name: {
-                value: 'John Doe'
-              }
+                value: 'John Doe',
+              },
             },
-            pets: []
-          }
-        });
-      expect(nextState.foo)
-        .toEqual({
-          firstSubform: {
-            ...defaultFields,
-            myField: {
-              value: 'normalized'
-            },
-            person: {
-              name: {
-                value: 'John Doe'
-              }
-            },
-            pets: []
+            pets: [],
           },
-          secondSubForm: {
-            ...defaultFields,
-            myField: {
-              value: 'normalized'
+        })
+      expect(nextState.foo).toEqual({
+        firstSubform: {
+          ...defaultFields,
+          myField: {
+            value: 'normalized',
+          },
+          person: {
+            name: {
+              value: 'John Doe',
             },
-            person: {
-              name: {
-                value: 'John Doe'
-              }
+          },
+          pets: [],
+        },
+        secondSubForm: {
+          ...defaultFields,
+          myField: {
+            value: 'normalized',
+          },
+          person: {
+            name: {
+              value: 'John Doe',
             },
-            pets: []
-          }
-        });
-    });
+          },
+          pets: [],
+        },
+      })
+    })
 
     it('should normalize simple form values', () => {
       const defaultFields = {
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      };
+        [globalErrorKey]: undefined,
+      }
       const normalize = reducer.normalize({
         foo: {
-          'name': () => 'normalized',
-          'person.name': (name) => name && name.toUpperCase(),
-          'pets[].name': (name) => name && name.toLowerCase()
-        }
-      });
+          name: () => 'normalized',
+          'person.name': name => name && name.toUpperCase(),
+          'pets[].name': name => name && name.toLowerCase(),
+        },
+      })
       const state = normalize({
         foo: {
           name: {
-            value: 'dog'
+            value: 'dog',
           },
           person: {
             name: {
               value: 'John Doe',
-            }
+            },
           },
-          pets: [
-            {name: {value: 'Fido'}},
-            {name: {value: 'Tucker'}}
-          ]
-        }
-      });
-      expect(state)
-        .toExist()
-        .toBeA('object');
+          pets: [{name: {value: 'Fido'}}, {name: {value: 'Tucker'}}],
+        },
+      })
+      expect(state).toExist().toBeA('object')
       expect(state.foo)
         .toExist()
         .toBeA('object')
         .toEqual({
           ...defaultFields,
           name: {
-            value: 'normalized'
+            value: 'normalized',
           },
           person: {
             name: {
-              value: 'JOHN DOE'
-            }
+              value: 'JOHN DOE',
+            },
           },
-          pets: [
-            {name: {value: 'fido'}},
-            {name: {value: 'tucker'}}
-          ]
-        });
-    });
+          pets: [{name: {value: 'fido'}}, {name: {value: 'tucker'}}],
+        })
+    })
 
     it('should allow resetForm to work on a normalized form', () => {
       const defaultFields = {
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      };
+        [globalErrorKey]: undefined,
+      }
       const normalizingReducer = reducer.normalize({
         foo: {
-          'name': value => value && value.toUpperCase(),
-          'person.name': (name) => name && name.toUpperCase(),
-          'pets[].name': (name) => name && name.toLowerCase()
-        }
-      });
-      const empty = normalizingReducer();
+          name: value => value && value.toUpperCase(),
+          'person.name': name => name && name.toUpperCase(),
+          'pets[].name': name => name && name.toLowerCase(),
+        },
+      })
+      const empty = normalizingReducer()
       let state = normalizingReducer(empty, {
         form: 'foo',
         ...change('name', 'dog'),
-      });
+      })
       state = normalizingReducer(state, {
         form: 'foo',
         ...change('person.name', 'John Doe'),
-      });
+      })
       state = normalizingReducer(state, {
         form: 'foo',
-        ...addArrayValue('pets', {name: 'Fido'})
-      });
-      expect(state)
-        .toExist()
-        .toBeA('object');
+        ...addArrayValue('pets', {name: 'Fido'}),
+      })
+      expect(state).toExist().toBeA('object')
       expect(state.foo)
         .toExist()
         .toBeA('object')
         .toEqual({
           ...defaultFields,
           name: {
-            value: 'DOG'
+            value: 'DOG',
           },
           person: {
             name: {
-              value: 'JOHN DOE'
-            }
+              value: 'JOHN DOE',
+            },
           },
-          pets: [{
-            name: {
-              initial: 'Fido',
-              value: 'fido'
-            }
-          }]
-        });
+          pets: [
+            {
+              name: {
+                initial: 'Fido',
+                value: 'fido',
+              },
+            },
+          ],
+        })
       const result = normalizingReducer(state, {
         form: 'foo',
-        ...reset()
-      });
-      expect(result)
-        .toExist()
-        .toBeA('object');
+        ...reset(),
+      })
+      expect(result).toExist().toBeA('object')
       expect(result.foo)
         .toExist()
         .toBeA('object')
         .toEqual({
           ...defaultFields,
           name: {
-            value: undefined
+            value: undefined,
           },
           person: {
             name: {
-              value: undefined
-            }
+              value: undefined,
+            },
           },
-          pets: [{
-            name: {
-              initial: 'Fido',
-              value: 'fido'
-            }
-          }]
-        });
-    });
+          pets: [
+            {
+              name: {
+                initial: 'Fido',
+                value: 'fido',
+              },
+            },
+          ],
+        })
+    })
 
     it('should normalize arbitrarily deeply nested fields', () => {
       const defaultFields = {
         _active: undefined,
         _asyncValidating: false,
-        [globalErrorKey]: undefined,
         _initialized: false,
+        _submitFailed: false,
         _submitting: false,
-        _submitFailed: false
-      };
+        [globalErrorKey]: undefined,
+      }
       const normalize = reducer.normalize({
         foo: {
-          'name': () => 'normalized',
-          'person.name': (name) => name && name.toUpperCase(),
-          'pets[].name': (name) => name && name.toLowerCase(),
-          'cats[]': (array) => array && array.map(({value}) => ({value: value.toUpperCase()})),
-          'programming[].langs[]': (array) => array && array.slice(0).sort(compare),
-          'some.numbers[]': (array) => array && array.filter(({value}) => value % 2 === 0),
-          'a.very.deep.object.property': (value) => value && value.toUpperCase(),
-          'my[].deeply[].nested.item': (value) => value && value.toUpperCase()
-        }
-      });
+          'a.very.deep.object.property': value => value && value.toUpperCase(),
+          'cats[]': array => array && array.map(({value}) => ({value: value.toUpperCase()})),
+          'my[].deeply[].nested.item': value => value && value.toUpperCase(),
+          name: () => 'normalized',
+          'person.name': name => name && name.toUpperCase(),
+          'pets[].name': name => name && name.toLowerCase(),
+          'programming[].langs[]': array => array && array.slice(0).sort(compare),
+          'some.numbers[]': array => array && array.filter(({value}) => value % 2 === 0),
+        },
+      })
       const state = normalize({
         foo: {
-          person: {
-            name: makeFieldValue({value: 'John Doe'})
+          a: {
+            very: {
+              deep: {
+                object: {
+                  property: makeFieldValue({value: 'test'}),
+                },
+              },
+            },
           },
-          pets: [
-            {name: makeFieldValue({value: 'Fido'})},
-            {name: makeFieldValue({value: 'Tucker'})}
-          ],
           cats: [
             makeFieldValue({value: 'lion'}),
             makeFieldValue({value: 'panther'}),
             makeFieldValue({value: 'garfield'}),
-            makeFieldValue({value: 'whiskers'})
+            makeFieldValue({value: 'whiskers'}),
           ],
-          programming: [{
-            langs: [
-              makeFieldValue({value: 'ml'}),
-              makeFieldValue({value: 'ocaml'}),
-              makeFieldValue({value: 'lisp'}),
-              makeFieldValue({value: 'haskell'}),
-              makeFieldValue({value: 'f#'})
-            ]
-          }, {
-            langs: [
-              makeFieldValue({value: 'smalltalk'}),
-              makeFieldValue({value: 'ruby'}),
-              makeFieldValue({value: 'java'}),
-              makeFieldValue({value: 'c#'}),
-              makeFieldValue({value: 'c++'})
-            ]
-          }],
+          my: [
+            {
+              deeply: [
+                {
+                  nested: {
+                    item: makeFieldValue({value: 'hello'}),
+                    not: makeFieldValue({value: 'lost'}),
+                  },
+                  otherKey: makeFieldValue({value: 'Goodbye'}),
+                },
+                {
+                  nested: {
+                    item: makeFieldValue({value: 'hola'}),
+                    not: makeFieldValue({value: 'lost'}),
+                  },
+                  otherKey: makeFieldValue({value: 'Adios'}),
+                },
+              ],
+              stays: makeFieldValue({value: 'intact'}),
+            },
+            {
+              deeply: [
+                {
+                  nested: {
+                    item: makeFieldValue({value: 'world'}),
+                    not: makeFieldValue({value: 'lost'}),
+                  },
+                  otherKey: makeFieldValue({value: 'Later'}),
+                },
+                {
+                  nested: {
+                    item: makeFieldValue({value: 'mundo'}),
+                    not: makeFieldValue({value: 'lost'}),
+                  },
+                  otherKey: makeFieldValue({value: 'Hasta luego'}),
+                },
+              ],
+              stays: makeFieldValue({value: 'intact'}),
+            },
+          ],
+          person: {
+            name: makeFieldValue({value: 'John Doe'}),
+          },
+          pets: [{name: makeFieldValue({value: 'Fido'})}, {name: makeFieldValue({value: 'Tucker'})}],
+          programming: [
+            {
+              langs: [
+                makeFieldValue({value: 'ml'}),
+                makeFieldValue({value: 'ocaml'}),
+                makeFieldValue({value: 'lisp'}),
+                makeFieldValue({value: 'haskell'}),
+                makeFieldValue({value: 'f#'}),
+              ],
+            },
+            {
+              langs: [
+                makeFieldValue({value: 'smalltalk'}),
+                makeFieldValue({value: 'ruby'}),
+                makeFieldValue({value: 'java'}),
+                makeFieldValue({value: 'c#'}),
+                makeFieldValue({value: 'c++'}),
+              ],
+            },
+          ],
           some: {
             numbers: [
               makeFieldValue({value: 1}),
@@ -3267,178 +3453,122 @@ describe('reducer', () => {
               makeFieldValue({value: 7}),
               makeFieldValue({value: 8}),
               makeFieldValue({value: 9}),
-              makeFieldValue({value: 10})
-            ]
+              makeFieldValue({value: 10}),
+            ],
           },
-          a: {
-            very: {
-              deep: {
-                object: {
-                  property: makeFieldValue({value: 'test'})
-                }
-              }
-            }
-          },
-          my: [{
-            deeply: [{
-              nested: {
-                item: makeFieldValue({value: 'hello'}),
-                not: makeFieldValue({value: 'lost'})
-              },
-              otherKey: makeFieldValue({value: 'Goodbye'})
-            }, {
-              nested: {
-                item: makeFieldValue({value: 'hola'}),
-                not: makeFieldValue({value: 'lost'})
-              },
-              otherKey: makeFieldValue({value: 'Adios'})
-            }],
-            stays: makeFieldValue({value: 'intact'})
-          }, {
-            deeply: [{
-              nested: {
-                item: makeFieldValue({value: 'world'}),
-                not: makeFieldValue({value: 'lost'})
-              },
-              otherKey: makeFieldValue({value: 'Later'})
-            }, {
-              nested: {
-                item: makeFieldValue({value: 'mundo'}),
-                not: makeFieldValue({value: 'lost'})
-              },
-              otherKey: makeFieldValue({value: 'Hasta luego'})
-            }],
-            stays: makeFieldValue({value: 'intact'})
-          }]
-        }
-      });
-      expect(state)
-        .toExist()
-        .toBeA('object');
+        },
+      })
+      expect(state).toExist().toBeA('object')
       expect(state.foo)
         .toExist()
         .toBeA('object')
         .toEqual({
           ...defaultFields,
-          name: {value: 'normalized'},
-          person: {
-            name: {value: 'JOHN DOE'}
-          },
-          pets: [
-            {name: {value: 'fido'}},
-            {name: {value: 'tucker'}}
-          ],
-          cats: [
-            {value: 'LION'},
-            {value: 'PANTHER'},
-            {value: 'GARFIELD'},
-            {value: 'WHISKERS'}
-          ],
-          programming: [{
-            langs: [
-              {value: 'f#'},
-              {value: 'haskell'},
-              {value: 'lisp'},
-              {value: 'ml'},
-              {value: 'ocaml'}
-            ]
-          }, {
-            langs: [
-              {value: 'c#'},
-              {value: 'c++'},
-              {value: 'java'},
-              {value: 'ruby'},
-              {value: 'smalltalk'}
-            ]
-          }],
-          some: {
-            numbers: [
-              {value: 2},
-              {value: 4},
-              {value: 6},
-              {value: 8},
-              {value: 10}
-            ]
-          },
           a: {
             very: {
               deep: {
                 object: {
-                  property: {value: 'TEST'}
-                }
-              }
-            }
+                  property: {value: 'TEST'},
+                },
+              },
+            },
           },
-          my: [{
-            deeply: [{
-              nested: {
-                item: {value: 'HELLO'},
-                not: {value: 'lost'}
-              },
-              otherKey: {value: 'Goodbye'}
-            }, {
-              nested: {
-                item: {value: 'HOLA'},
-                not: {value: 'lost'}
-              },
-              otherKey: {value: 'Adios'}
-            }],
-            stays: {value: 'intact'}
-          }, {
-            deeply: [{
-              nested: {
-                item: {value: 'WORLD'},
-                not: {value: 'lost'}
-              },
-              otherKey: {value: 'Later'}
-            }, {
-              nested: {
-                item: {value: 'MUNDO'},
-                not: {value: 'lost'}
-              },
-              otherKey: {value: 'Hasta luego'}
-            }],
-            stays: {value: 'intact'}
-          }]
-        });
-      expect(isFieldValue(state.foo.name)).toBe(true);
-      expect(isFieldValue(state.foo.person.name)).toBe(true);
-      expect(isFieldValue(state.foo.pets[0].name)).toBe(true);
-      expect(isFieldValue(state.foo.pets[1].name)).toBe(true);
-      expect(isFieldValue(state.foo.cats[0])).toBe(true);
-      expect(isFieldValue(state.foo.cats[1])).toBe(true);
-      expect(isFieldValue(state.foo.cats[2])).toBe(true);
-      expect(isFieldValue(state.foo.cats[3])).toBe(true);
-      expect(isFieldValue(state.foo.programming[0].langs[0])).toBe(true);
-      expect(isFieldValue(state.foo.programming[0].langs[1])).toBe(true);
-      expect(isFieldValue(state.foo.programming[0].langs[2])).toBe(true);
-      expect(isFieldValue(state.foo.programming[0].langs[3])).toBe(true);
-      expect(isFieldValue(state.foo.programming[0].langs[4])).toBe(true);
-      expect(isFieldValue(state.foo.programming[1].langs[0])).toBe(true);
-      expect(isFieldValue(state.foo.programming[1].langs[1])).toBe(true);
-      expect(isFieldValue(state.foo.programming[1].langs[2])).toBe(true);
-      expect(isFieldValue(state.foo.programming[1].langs[3])).toBe(true);
-      expect(isFieldValue(state.foo.programming[1].langs[4])).toBe(true);
-      expect(isFieldValue(state.foo.some.numbers[0])).toBe(true);
-      expect(isFieldValue(state.foo.some.numbers[1])).toBe(true);
-      expect(isFieldValue(state.foo.some.numbers[2])).toBe(true);
-      expect(isFieldValue(state.foo.some.numbers[3])).toBe(true);
-      expect(isFieldValue(state.foo.some.numbers[4])).toBe(true);
-      expect(isFieldValue(state.foo.a.very.deep.object.property)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].deeply[0].nested.item)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].deeply[0].nested.not)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].deeply[0].otherKey)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].deeply[1].nested.item)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].deeply[1].nested.not)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].deeply[1].otherKey)).toBe(true);
-      expect(isFieldValue(state.foo.my[0].stays)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].deeply[0].nested.item)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].deeply[0].nested.not)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].deeply[0].otherKey)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].deeply[1].nested.item)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].deeply[1].nested.not)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].deeply[1].otherKey)).toBe(true);
-      expect(isFieldValue(state.foo.my[1].stays)).toBe(true);
-    });
-  });
-});
+          cats: [{value: 'LION'}, {value: 'PANTHER'}, {value: 'GARFIELD'}, {value: 'WHISKERS'}],
+          my: [
+            {
+              deeply: [
+                {
+                  nested: {
+                    item: {value: 'HELLO'},
+                    not: {value: 'lost'},
+                  },
+                  otherKey: {value: 'Goodbye'},
+                },
+                {
+                  nested: {
+                    item: {value: 'HOLA'},
+                    not: {value: 'lost'},
+                  },
+                  otherKey: {value: 'Adios'},
+                },
+              ],
+              stays: {value: 'intact'},
+            },
+            {
+              deeply: [
+                {
+                  nested: {
+                    item: {value: 'WORLD'},
+                    not: {value: 'lost'},
+                  },
+                  otherKey: {value: 'Later'},
+                },
+                {
+                  nested: {
+                    item: {value: 'MUNDO'},
+                    not: {value: 'lost'},
+                  },
+                  otherKey: {value: 'Hasta luego'},
+                },
+              ],
+              stays: {value: 'intact'},
+            },
+          ],
+          name: {value: 'normalized'},
+          person: {
+            name: {value: 'JOHN DOE'},
+          },
+          pets: [{name: {value: 'fido'}}, {name: {value: 'tucker'}}],
+          programming: [
+            {
+              langs: [{value: 'f#'}, {value: 'haskell'}, {value: 'lisp'}, {value: 'ml'}, {value: 'ocaml'}],
+            },
+            {
+              langs: [{value: 'c#'}, {value: 'c++'}, {value: 'java'}, {value: 'ruby'}, {value: 'smalltalk'}],
+            },
+          ],
+          some: {
+            numbers: [{value: 2}, {value: 4}, {value: 6}, {value: 8}, {value: 10}],
+          },
+        })
+      expect(isFieldValue(state.foo.name)).toBe(true)
+      expect(isFieldValue(state.foo.person.name)).toBe(true)
+      expect(isFieldValue(state.foo.pets[0].name)).toBe(true)
+      expect(isFieldValue(state.foo.pets[1].name)).toBe(true)
+      expect(isFieldValue(state.foo.cats[0])).toBe(true)
+      expect(isFieldValue(state.foo.cats[1])).toBe(true)
+      expect(isFieldValue(state.foo.cats[2])).toBe(true)
+      expect(isFieldValue(state.foo.cats[3])).toBe(true)
+      expect(isFieldValue(state.foo.programming[0].langs[0])).toBe(true)
+      expect(isFieldValue(state.foo.programming[0].langs[1])).toBe(true)
+      expect(isFieldValue(state.foo.programming[0].langs[2])).toBe(true)
+      expect(isFieldValue(state.foo.programming[0].langs[3])).toBe(true)
+      expect(isFieldValue(state.foo.programming[0].langs[4])).toBe(true)
+      expect(isFieldValue(state.foo.programming[1].langs[0])).toBe(true)
+      expect(isFieldValue(state.foo.programming[1].langs[1])).toBe(true)
+      expect(isFieldValue(state.foo.programming[1].langs[2])).toBe(true)
+      expect(isFieldValue(state.foo.programming[1].langs[3])).toBe(true)
+      expect(isFieldValue(state.foo.programming[1].langs[4])).toBe(true)
+      expect(isFieldValue(state.foo.some.numbers[0])).toBe(true)
+      expect(isFieldValue(state.foo.some.numbers[1])).toBe(true)
+      expect(isFieldValue(state.foo.some.numbers[2])).toBe(true)
+      expect(isFieldValue(state.foo.some.numbers[3])).toBe(true)
+      expect(isFieldValue(state.foo.some.numbers[4])).toBe(true)
+      expect(isFieldValue(state.foo.a.very.deep.object.property)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].deeply[0].nested.item)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].deeply[0].nested.not)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].deeply[0].otherKey)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].deeply[1].nested.item)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].deeply[1].nested.not)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].deeply[1].otherKey)).toBe(true)
+      expect(isFieldValue(state.foo.my[0].stays)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].deeply[0].nested.item)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].deeply[0].nested.not)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].deeply[0].otherKey)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].deeply[1].nested.item)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].deeply[1].nested.not)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].deeply[1].otherKey)).toBe(true)
+      expect(isFieldValue(state.foo.my[1].stays)).toBe(true)
+    })
+  })
+})

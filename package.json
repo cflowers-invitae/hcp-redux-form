@@ -1,15 +1,17 @@
 {
-  "name": "redux-form",
-  "version": "4.3.0",
-  "description": "A higher order component decorator for forms using Redux and React",
-  "main": "./lib/index.js",
-  "jsnext:main": "./src/index.js",
+  "name": "@invitae/hcp-redux-form",
+  "version": "0.0.0",
+  "homepage": "https://github.com/invitae-internal/fresco/tree/main/shared-features/hcp-redux-form#readme",
+  "description": "A higher order component decorator for forms using Redux and React. Forked by Invitae for HCP to support React 16",
+  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/erikras/redux-form"
+    "url": "git+https://github.com/invitae-internal/fresco.git"
   },
   "scripts": {
-    "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "build-deprecated": "npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "build": "rollup -c",
     "build:lib": "babel src --out-dir lib",
     "build:umd": "cross-env NODE_ENV=development webpack src/index.js dist/redux-form.js",
     "build:umd:min": "cross-env NODE_ENV=production webpack src/index.js dist/redux-form.min.js",
@@ -17,7 +19,8 @@
     "coverage": "babel-istanbul cover src/__tests__/setup.js",
     "lint": "eslint src",
     "prepublish": "npm run test && npm run clean && npm run build",
-    "test": "mocha --compilers js:babel-register --recursive 'src/**/__tests__/*' --require src/__tests__/setup.js",
+    "test-deprecated": "mocha --compilers js:babel-register --recursive 'src/**/__tests__/*' --require src/__tests__/setup.js",
+    "test": "jest --coverage",
     "test:watch": "npm test -- --watch",
     "test:cov": "babel-node ./node_modules/isparta/bin/isparta cover ./node_modules/mocha/bin/_mocha -- --recursive 'src/**/__tests__/*' --require src/__tests__/setup.js",
     "test:codecov": "cat ./coverage/coverage.json | ./node_modules/codecov.io/bin/codecov.io.js"
@@ -32,27 +35,32 @@
     "form",
     "decorator"
   ],
-  "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/erikras/redux-form/issues"
+    "url": "https://github.com/invitae-internal/fresco/issues"
   },
-  "homepage": "https://github.com/erikras/redux-form",
   "dependencies": {
     "deep-equal": "^1.0.1",
     "hoist-non-react-statics": "^1.0.5",
     "is-promise": "^2.1.0",
     "prop-types": "^15.8.1",
-    "react-lazy-cache": "^3.0.1"
+    "react-lazy-cache": "^3.0.1",
+    "tslib": "^2.4.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.18.13",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/register": "^7.18.9",
+    "@invitae/babel-config-invitae": "^3.2.3",
+    "@invitae/babel-polyfill-invitae": "^3.1.4",
+    "@invitae/rollup-config-invitae": "^3.1.6",
+    "@types/prop-types": "^15.7.5",
     "@types/react": "^16.14.26",
     "@types/react-dom": "^16.9.16",
-    "babel-cli": "^6.3.17",
-    "babel-core": "^6.3.26",
-    "babel-eslint": "^5.0.0-beta9",
-    "babel-istanbul": "^0.6.1",
-    "babel-loader": "^6.2.0",
+    "@types/react-redux": "^7.1.24",
+    "@types/redux-form": "^4.0.40",
+    "babel-loader": "^7.1.1",
     "babel-plugin-check-es2015-constants": "^6.3.13",
     "babel-plugin-syntax-jsx": "^6.3.13",
     "babel-plugin-transform-decorators-legacy": "^1.2.0",
@@ -76,14 +84,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
     "babel-plugin-transform-react-display-name": "^6.4.0",
     "babel-plugin-transform-react-jsx": "^6.4.0",
-    "babel-register": "^6.3.13",
     "codecov.io": "^0.1.6",
     "cross-env": "^1.0.7",
-    "eslint": "^1.10.3",
     "eslint-config-airbnb": "^0.1.0",
     "eslint-plugin-react": "^3.16.1",
     "expect": "^1.14.0",
-    "isparta": "^4.0.0",
     "jsdom": "~5.4.3",
     "mocha": "^2.4.5",
     "mocha-lcov-reporter": "^1.1.0",
@@ -96,6 +101,8 @@
     "webpack": "^1.12.13"
   },
   "peerDependencies": {
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-redux": "^6.0.0",
     "redux": "^4.0.0"
   },
@@ -107,5 +114,8 @@
         "*.js"
       ]
     }
-  ]
+  ],
+  "jest": {
+    "testEnvironment": "jsdom"
+  }
 }
